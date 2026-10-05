@@ -1,0 +1,3466 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="配布研修">
+  <title>配布研修アプリ</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap');
+    
+    :root {
+      /* === Colors === */
+      --bg-light: #ffffff;
+      --bg-secondary: #fafaf8;
+      --bg-tertiary: #f3f4f1;
+      --bg-card: #ffffff;
+      --bg-hover: #f8f9f7;
+      
+      --border-thin: #efefed;
+      --border-light: #e5e8e3;
+      --border-medium: #d0d5cc;
+      
+      --text-primary: #1a1a1a;
+      --text-secondary: #5a5a5a;
+      --text-tertiary: #999999;
+      --text-quarternary: #b3b3b3;
+      
+      --accent-green: #2d9c4a;
+      --accent-green-light: #4fb85f;
+      --accent-green-lighter: #6ec977;
+      --accent-green-dark: #1f7035;
+      --accent-green-pale: #e8f5e9;
+      
+      --success: #2d9c4a;
+      --warning: #ffa500;
+      --error: #e84c3d;
+      
+      /* === Shadow System === */
+      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12);
+      
+      --shadow-accent-sm: 0 2px 8px rgba(45, 156, 74, 0.12);
+      --shadow-accent-md: 0 4px 16px rgba(45, 156, 74, 0.16);
+      
+      /* === Typography === */
+      --font-base: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      --line-height-tight: 1.3;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.7;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg-light);
+    }
+    
+    body {
+      margin: 0;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: var(--font-base);
+      font-size: 14px;
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      min-height: 100vh;
+      text-rendering: optimizeLegibility;
+    }
+    
+    .app {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header {
+      background: var(--bg-light);
+      padding: 16px 16px 14px;
+      text-align: center;
+      border-bottom: 3px solid var(--accent-green);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .header-logo {
+      max-width: 110px;
+      max-height: 100px;
+      object-fit: contain;
+      display: block;
+      animation: slideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 1px;
+      background: transparent;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      line-height: var(--line-height-tight);
+    }
+    
+    .header p {
+      margin: 0;
+      font-size: 10px;
+      color: var(--accent-green-dark);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px 140px;
+      background: var(--bg-secondary);
+    }
+    
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    .screen.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* === メニューグリッド === */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 0;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .menu-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-light);
+      border-radius: 14px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      will-change: transform, box-shadow, border-color;
+      min-height: 120px;
+    }
+    
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(45, 156, 74, 0.06), transparent);
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .menu-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(45, 156, 74, 0.02) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .menu-card:hover::before {
+      left: 100%;
+    }
+    
+    .menu-card:hover {
+      border-color: var(--accent-green);
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-green-pale) 100%);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-accent-md);
+    }
+    
+    .menu-card:active {
+      transform: scale(0.97);
+    }
+    
+    .menu-card:focus-within {
+      outline: 2px solid var(--accent-green);
+      outline-offset: 2px;
+    }
+    
+    .menu-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-green);
+      opacity: 0.95;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 40px;
+      will-change: transform, color;
+    }
+    
+    .menu-card:hover .menu-icon {
+      transform: scale(1.18) rotate(2deg);
+      opacity: 1;
+      color: var(--accent-green-dark);
+      filter: drop-shadow(0 2px 4px rgba(45, 156, 74, 0.2));
+    }
+    
+    .menu-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text-primary);
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      line-height: var(--line-height-tight);
+    }
+    
+    .menu-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 0;
+      letter-spacing: 0.02em;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    
+    .menu-card.coming-soon {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .badge-new {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
+      color: white;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      box-shadow: var(--shadow-accent-sm);
+    }
+    
+    /* === セクション === */
+    .section-title {
+      background: var(--bg-light);
+      color: var(--text-primary);
+      padding: 16px 18px 14px;
+      border: 1.5px solid var(--border-light);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      font-weight: 800;
+      font-size: 14px;
+      margin: 0 0 -1.5px 0;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      border-top: 4px solid var(--accent-green);
+      position: relative;
+    }
+    
+    .section-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-light);
+      border-radius: 0 0 14px 14px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    
+    /* === テーブル === */
+    .table-container {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-light);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    th {
+      background: var(--bg-tertiary);
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 800;
+      border-bottom: 1.5px solid var(--border-light);
+      color: var(--text-primary);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: -0.005em;
+    }
+    
+    th:first-child { width: 24px; }
+    th:nth-child(2) { width: 28px; }
+    th:last-child { width: 44px; text-align: center; }
+    
+    tr { border-bottom: 1px solid var(--border-thin); }
+    tr:hover { background: rgba(45, 156, 74, 0.03); }
+    tr:last-child { border-bottom: none; }
+    
+    td {
+      padding: 13px 12px;
+      vertical-align: middle;
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 12px;
+    }
+    
+    .checkbox-col { text-align: center; }
+    .checkbox-col input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent-green);
+      border-radius: 4px;
+    }
+    
+    .section-col {
+      font-size: 9px;
+      font-weight: 800;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    .section-1 { background: linear-gradient(135deg, #2d9c4a 0%, #1f7035 100%); }
+    .section-2 { background: linear-gradient(135deg, #4fb85f 0%, #2d9c4a 100%); }
+    .section-3 { background: linear-gradient(135deg, #66cc88 0%, #4fb85f 100%); }
+    .section-4 { background: linear-gradient(135deg, #88dd99 0%, #66cc88 100%); }
+    .section-5 { background: linear-gradient(135deg, #2d9c4a 0%, #1f7035 100%); }
+    
+    .title-col {
+      font-weight: 500;
+      line-height: var(--line-height-normal);
+      color: var(--text-primary);
+    }
+    
+    /* === フォーム === */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    /* === Tablet & Desktop === */
+    @media (min-width: 768px) {
+      body {
+        font-size: 15px;
+      }
+      
+      .header {
+        padding: 32px 24px 28px;
+      }
+      
+      .header h1 {
+        font-size: 28px;
+      }
+      
+      .header p {
+        font-size: 10px;
+      }
+      
+      .content {
+        padding: 48px 24px 140px;
+      }
+      
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        max-width: 600px;
+      }
+      
+      .menu-card {
+        aspect-ratio: 1;
+        padding: 44px 28px;
+        border-radius: 18px;
+        min-height: unset;
+      }
+      
+      .menu-icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 24px;
+        font-size: 48px;
+      }
+      
+      .menu-title {
+        font-size: 16px;
+        margin: 0 0 8px;
+      }
+      
+      .section-title {
+        padding: 20px 24px 18px;
+        font-size: 15px;
+        border-radius: 18px 18px 0 0;
+      }
+      
+      .section-card {
+        padding: 32px;
+        border-radius: 0 0 18px 18px;
+        margin-bottom: 28px;
+      }
+      
+      .table-container {
+        border-radius: 18px;
+        margin-bottom: 28px;
+      }
+      
+      table {
+        font-size: 13px;
+      }
+      
+      th {
+        padding: 16px 14px;
+        font-size: 11px;
+      }
+      
+      td {
+        padding: 16px 14px;
+        font-size: 13px;
+      }
+      
+      .choice {
+        font-size: 13px;
+        padding: 12px;
+      }
+      
+      .section-col {
+        font-size: 11px;
+        padding: 6px 12px;
+      }
+      
+      .btn {
+        padding: 13px 16px;
+        min-height: auto;
+      }
+      
+      .footer {
+        padding: 14px;
+      }
+    }
+    
+    @media (max-width: 767px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .field label {
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      display: block;
+      letter-spacing: -0.005em;
+      text-transform: uppercase;
+    }
+    
+    .field input,
+    .field select,
+    .field textarea {
+      border: 1.5px solid var(--border-light);
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 14px;
+      background: var(--bg-light);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: border-color, box-shadow;
+    }
+    
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: var(--text-quarternary);
+    }
+    
+    .field input:hover,
+    .field select:hover,
+    .field textarea:hover {
+      border-color: var(--accent-green-light);
+      background: var(--bg-hover);
+    }
+    
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(45, 156, 74, 0.12);
+    }
+    
+    .textarea-field {
+      display: flex;
+      flex-direction: column;
+      grid-column: 1 / -1;
+    }
+    
+    .textarea-field textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .choices {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .choice {
+      flex: 1;
+      border: 1.5px solid var(--border-light);
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      will-change: border-color, background, box-shadow;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .choice:hover {
+      border-color: var(--accent-green-light);
+      background: var(--accent-green-pale);
+      color: var(--accent-green-dark);
+    }
+    
+    .choice.selected {
+      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+      border-color: var(--accent-green);
+      color: white;
+      box-shadow: var(--shadow-accent-sm);
+    }
+    
+    /* === 注意点 === */
+    .section-card h3 {
+      margin: 0 0 14px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+    
+    .info-card {
+      background: var(--accent-green-pale);
+      border-left: 4px solid var(--accent-green);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      backdrop-filter: none;
+      transition: all 0.25s ease;
+    }
+    
+    .info-card:hover {
+      background: rgba(45, 156, 74, 0.12);
+    }
+    
+    .info-title {
+      font-weight: 800;
+      font-size: 11px;
+      color: var(--accent-green-dark);
+      margin: 0 0 5px;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+    
+    .info-content {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: var(--line-height-normal);
+      margin: 0;
+    }
+    
+    /* === フッター === */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.99);
+      border-top: 1.5px solid var(--border-light);
+      padding: 12px 12px 12px;
+      display: flex;
+      gap: 10px;
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+      z-index: 30;
+      backdrop-filter: blur(8px);
+      safe-area-inset-bottom: 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    
+    .btn {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      letter-spacing: -0.005em;
+      text-transform: uppercase;
+      will-change: transform, box-shadow;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-back {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1.5px solid var(--border-light);
+    }
+    .btn-back:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent-green-light);
+      color: var(--accent-green);
+    }
+    .btn-back:active {
+      transform: scale(0.95);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+      color: white;
+      box-shadow: var(--shadow-accent-sm);
+    }
+    .btn-primary:hover {
+      box-shadow: var(--shadow-accent-md);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+    .btn-primary:disabled {
+      background: var(--bg-tertiary);
+      cursor: not-allowed;
+      box-shadow: none;
+      color: var(--text-tertiary);
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: var(--border-light);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
+      border-radius: inherit;
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 0%;
+      box-shadow: 0 0 8px rgba(45, 156, 74, 0.35);
+    }
+    
+    .progress-text {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(45, 156, 74, 0.97);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 800;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      border: none;
+      box-shadow: var(--shadow-accent-sm);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+
+    /* === スキルアップ項目 === */
+    .skill-lead {
+      background: linear-gradient(135deg, rgba(30,95,230,.08), rgba(86,129,255,.03));
+      border: 1px solid rgba(30,95,230,.18);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .skill-lead-title {
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .skill-lead-text {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .skill-category {
+      margin-bottom: 22px;
+    }
+
+    .skill-category-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .skill-category-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      border-radius: 99px;
+      background: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(15,23,42,.03);
+    }
+
+    .skill-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .skill-card-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+
+    .loss-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      flex: 0 0 auto;
+    }
+
+    .loss-high {
+      background: #fff0f2;
+      color: #c53645;
+      border: 1px solid #f3c5cc;
+    }
+
+    .loss-medium {
+      background: #fff4df;
+      color: #a45c00;
+      border: 1px solid #f0d19a;
+    }
+
+    .loss-low {
+      background: #edf4ff;
+      color: #155eef;
+      border: 1px solid #c8d9ff;
+    }
+
+    .skill-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .skill-row:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .skill-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .skill-text {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .skill-priority {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: #fff8eb;
+      border: 1px solid #f2d8a4;
+      border-radius: 14px;
+    }
+
+    .skill-priority strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #8a4c00;
+      font-size: 14px;
+    }
+
+    .skill-priority p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #6b5a3e;
+    }
+
+    @media (max-width: 560px) {
+      .skill-row {
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+
+      .skill-card-head {
+        align-items: center;
+      }
+    }
+
+  
+
+    /* === 研修者向けポータル === */
+    .portal-hero {
+      background: linear-gradient(135deg, #173a2d 0%, #245640 55%, #2d6b4f 100%);
+      color: #fff;
+      border-radius: 18px;
+      padding: 24px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 32px rgba(21, 66, 47, .18);
+      position: relative;
+      overflow: hidden;
+    }
+    .portal-hero::after {
+      content: '';
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      right: -60px;
+      top: -80px;
+    }
+    .portal-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .78;
+      margin-bottom: 8px;
+    }
+    .portal-title {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.35;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+    .portal-copy {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.75;
+      color: rgba(255,255,255,.86);
+      max-width: 640px;
+    }
+    .portal-section {
+      margin-bottom: 28px;
+    }
+    .portal-section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 2px 12px;
+    }
+    .portal-section-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 850;
+      color: var(--text-primary);
+    }
+    .portal-section-desc {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .portal-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .portal-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-light);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: .2s ease;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+    }
+    .portal-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-green);
+      box-shadow: var(--shadow-accent-sm);
+    }
+    .portal-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-green-pale);
+      color: var(--accent-green);
+      flex: 0 0 auto;
+    }
+    .portal-card-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .portal-card-body {
+      min-width: 0;
+      flex: 1;
+    }
+    .portal-card-title {
+      margin: 0 0 3px;
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--text-primary);
+    }
+    .portal-card-desc {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+    .portal-arrow {
+      color: var(--text-tertiary);
+      font-size: 18px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .portal-card.is-primary {
+      border-color: rgba(45,156,74,.35);
+      background: linear-gradient(135deg, #fff 0%, var(--accent-green-pale) 100%);
+    }
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef5ff;
+      color: #2a62c9;
+      font-size: 10px;
+      font-weight: 800;
+      margin-left: 6px;
+      vertical-align: 1px;
+    }
+    .portal-mini-note {
+      background: #f7f9fb;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-top: 12px;
+    }
+    @media (min-width: 768px) {
+      .portal-grid { grid-template-columns: repeat(2, 1fr); }
+      .portal-hero { padding: 30px 28px; }
+      .portal-title { font-size: 28px; }
+    }
+
+
+
+    /* === 開始・終了報告 === */
+    .report-guide-lead {
+      background: linear-gradient(135deg, #eef6ff 0%, #ffffff 100%);
+      border: 1px solid #cfe0f5;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .report-guide-lead h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 850;
+      color: #244d7a;
+    }
+    .report-guide-lead p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+    .report-guide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .report-guide-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .report-guide-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .report-guide-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: #eef6ff;
+      color: #2b69a8;
+      flex: 0 0 auto;
+    }
+    .report-guide-icon svg { width: 26px; height: 26px; }
+    .report-guide-card h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 850;
+      color: var(--text-primary);
+    }
+    .report-guide-card ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.85;
+    }
+    .report-guide-important {
+      background: #fff6f5;
+      border: 1px solid #f0cbc7;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .report-guide-important h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 850;
+      color: #b23b32;
+    }
+    .report-guide-important p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+    @media (min-width: 768px) {
+      .report-guide-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* === 禁止文言 === */
+    .banned-intro {
+      background: linear-gradient(135deg, #fff8f5 0%, #fff 100%);
+      border: 1px solid #f1d5ca;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .banned-intro-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 850;
+      color: #7f2d20;
+    }
+    .banned-intro-title svg {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+    }
+    .banned-intro p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+    .banned-axis {
+      margin: -4px 0 16px;
+      padding: 12px 14px;
+      border-left: 4px solid #d63b32;
+      border-radius: 10px;
+      background: #fff4f3;
+      color: #7f2d20;
+      font-size: 12px;
+      line-height: 1.7;
+      font-weight: 750;
+    }
+    .banned-axis strong {
+      color: #c52f28;
+      font-weight: 900;
+    }
+    .banned-axis .axis-words {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+    .banned-axis .axis-words span {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #efc4bf;
+      color: #b5312a;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .banned-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .banned-card {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 14px;
+      align-items: start;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .banned-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #fff1ee;
+      color: #bb4938;
+    }
+    .banned-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+    .banned-number {
+      display: inline-block;
+      margin-bottom: 4px;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      color: #b75a49;
+    }
+    .banned-card h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 850;
+      color: var(--text-primary);
+    }
+    .banned-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .banned-example {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f8fafb;
+      border-radius: 9px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #5e6875;
+    }
+    .banned-example strong {
+      color: #3f4853;
+    }
+    .private-home-rule {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      align-items: start;
+      background: #fff1f1;
+      border: 1px solid #f0c5c5;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .private-home-rule .rule-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #ffe0e0;
+      color: #c83a3a;
+    }
+    .private-home-rule svg {
+      width: 25px;
+      height: 25px;
+    }
+    .private-home-rule h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+      font-weight: 850;
+      color: #9f2626;
+    }
+    .private-home-rule p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #7a3b3b;
+    }
+    .banned-memory {
+      background: #f4f7fa;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .banned-memory strong {
+      color: var(--text-primary);
+    }
+    @media (min-width: 760px) {
+      .banned-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+
+
+    /* === 開始・終了報告：資料内容をポータル化 === */
+    .rg-hero {
+      background: linear-gradient(135deg, #eef7fc 0%, #ffffff 100%);
+      border: 1px solid #cfe3ef;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .rg-hero h3 { margin: 0 0 8px; font-size: 18px; font-weight: 900; color: #174f76; }
+    .rg-hero p { margin: 0; font-size: 13px; line-height: 1.8; color: var(--text-secondary); }
+    .rg-alert {
+      margin-top: 14px; background: #fff4d8; border: 1px solid #f0d58d; color: #614b16;
+      border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 800; line-height: 1.7;
+    }
+    .rg-steps { display:grid; grid-template-columns:1fr; gap:10px; margin: 14px 0 2px; }
+    .rg-step { display:grid; grid-template-columns:42px 1fr; gap:12px; align-items:start; padding:13px; border-radius:13px; background:#f7fafc; border:1px solid var(--border-light); }
+    .rg-step-num { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:#1976a8; color:#fff; font-weight:900; }
+    .rg-step strong { display:block; font-size:13px; color:var(--text-primary); margin-bottom:2px; }
+    .rg-step span { display:block; font-size:12px; line-height:1.65; color:var(--text-secondary); }
+    .rg-section { background:var(--bg-card); border:1px solid var(--border-light); border-radius:18px; padding:18px; margin:16px 0; box-shadow:var(--shadow-sm); }
+    .rg-section-head { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+    .rg-section-no { flex:0 0 38px; width:38px; height:38px; border-radius:10px; display:grid; place-items:center; background:#1976a8; color:#fff; font-size:17px; font-weight:900; }
+    .rg-section h3 { margin:0 0 3px; font-size:16px; line-height:1.5; font-weight:900; color:var(--text-primary); }
+    .rg-section-sub { margin:0; font-size:12px; line-height:1.65; color:var(--text-secondary); }
+    .rg-list { margin: 10px 0 0; padding-left:20px; font-size:13px; line-height:1.85; color:var(--text-secondary); }
+    .rg-example { margin-top:12px; border-radius:12px; overflow:hidden; border:1px solid #d7e8e2; }
+    .rg-example-label { background:#17a18d; color:#fff; font-weight:850; font-size:12px; padding:8px 11px; }
+    .rg-example-body { padding:12px; background:#effaf7; font-size:14px; line-height:1.75; font-weight:800; color:#24413d; text-align:center; }
+    .rg-gallery { display:grid; grid-template-columns:1fr; gap:12px; margin-top:14px; }
+    .rg-photo { margin:0; border-radius:14px; overflow:hidden; border:1px solid var(--border-light); background:#fff; }
+    .rg-photo img { width:100%; display:block; height:auto; }
+    .rg-photo figcaption { padding:9px 11px; font-size:11px; line-height:1.55; color:var(--text-secondary); background:#fafcfd; text-align:center; }
+    .rg-gallery.same-size .rg-photo { display:flex; flex-direction:column; }
+    .rg-gallery.same-size .rg-photo img { width:100%; height:520px; object-fit:cover; object-position: top center; }
+    @media (max-width: 759px) {
+      .rg-gallery.same-size .rg-photo img { height:460px; }
+    }
+    .rg-checkbox { margin-top:12px; background:#edf7fc; border:1px solid #cfe6f3; border-radius:12px; padding:12px 14px; }
+    .rg-checkbox-title { font-weight:850; color:#174f76; font-size:13px; margin-bottom:6px; }
+    .rg-checkbox ul { margin:0; padding-left:20px; font-size:12px; line-height:1.8; color:var(--text-secondary); }
+    .rg-gps-example { margin-top:12px; background:#fff0ed; border:1px solid #f2d0c8; border-radius:12px; padding:12px 14px; font-size:13px; line-height:1.75; font-weight:750; color:#7a3f35; }
+    .rg-flow { margin-top:18px; }
+    .rg-flow h3 { margin:0 0 10px; font-size:16px; font-weight:900; }
+    .rg-flow-row { display:grid; grid-template-columns:36px 1fr; gap:10px; align-items:stretch; margin-bottom:8px; }
+    .rg-flow-n { border-radius:10px; background:#1976a8; color:#fff; display:grid; place-items:center; font-weight:900; }
+    .rg-flow-c { border:1px solid var(--border-light); background:#f7fafc; border-radius:10px; padding:10px 12px; }
+    .rg-flow-c strong { display:block; font-size:12px; margin-bottom:2px; color:var(--text-primary); }
+    .rg-flow-c span { font-size:11px; line-height:1.55; color:var(--text-secondary); }
+    @media (min-width: 760px) {
+      .rg-steps { grid-template-columns:repeat(3,1fr); }
+      .rg-step { grid-template-columns:1fr; }
+      .rg-gallery.two { grid-template-columns:repeat(2,1fr); }
+    }
+
+
+    /* === 投函する際の注意点 === */
+    .pc-hero{background:linear-gradient(135deg,#163f61 0%,#1e547c 100%);border-radius:18px;padding:20px;color:#fff;position:relative;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .pc-kicker{font-size:11px;letter-spacing:.16em;font-weight:800;opacity:.76;margin-bottom:6px}.pc-hero h3{font-size:22px;margin:0 0 8px;font-weight:900;line-height:1.35}.pc-hero p{font-size:13px;line-height:1.8;margin:0;color:rgba(255,255,255,.9)}
+    .pc-badge{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#ef4444;color:#fff;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900}.pc-badge small{font-size:10px;font-weight:700;opacity:.9}
+    .pc-alert-top{margin:14px 0 0;background:#fff6d8;border:1px solid #efc44d;border-radius:12px;padding:13px 14px;color:#5e4a14;font-size:13px;line-height:1.7;font-weight:800}
+    .pc-stack{display:grid;gap:14px}.pc-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:18px;padding:18px;box-shadow:var(--shadow-sm)}
+    .pc-card-head{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:start}.pc-num{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#2b98cf;color:#fff;font-weight:900;font-size:17px}.pc-num.orange{background:#ff9f1c}.pc-card h4{margin:3px 0 5px;font-size:17px;line-height:1.45;color:var(--text-primary);font-weight:900}.pc-card p{margin:0;font-size:13px;line-height:1.8;color:var(--text-secondary)}
+    .pc-flag{width:36px;height:36px;color:#ef4444}.pc-flag svg{width:100%;height:100%}.pc-em{font-weight:850;color:#173f60}.pc-gallery{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}.pc-shot{margin:0;border:1px solid var(--border-light);border-radius:13px;overflow:hidden;background:#f8fafc}.pc-shot img{width:100%;height:155px;object-fit:cover;display:block}.pc-shot figcaption{font-size:11px;font-weight:800;text-align:center;padding:8px 10px;color:var(--text-secondary);background:#fff}
+    .pc-warning{margin-top:16px;border:2px solid #ef4444;background:#fff1f0;border-radius:16px;padding:15px 16px}.pc-warning h4{margin:0 0 7px;color:#dc2626;font-size:16px;font-weight:900}.pc-warning p{margin:0;color:#7f1d1d;font-size:13px;line-height:1.8}.pc-warning strong{color:#991b1b}
+    @media(min-width:760px){.pc-gallery{grid-template-columns:1fr 1fr}.pc-shot img{height:180px}}
+    .pc-banexamples{margin-top:18px;padding:16px;border-radius:18px;background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);border:1px solid #d7e6f5;box-shadow:0 10px 26px rgba(23,63,96,.08)}
+    .pc-banexamples-head h3{margin:6px 0 8px;font-size:20px;line-height:1.45;font-weight:900;color:#173f60}
+    .pc-banexamples-head p{margin:0;color:var(--text-secondary);font-size:13px;line-height:1.8}
+    .pc-banexamples-kicker{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#e8f1fb;color:#175887;font-size:11px;font-weight:900;letter-spacing:.04em}
+    .pc-ban-group{margin-top:16px;padding-top:16px;border-top:1px solid #e3edf7}
+    .pc-ban-group:first-of-type{margin-top:14px;padding-top:0;border-top:none}
+    .pc-ban-group h4{margin:0 0 6px;font-size:16px;font-weight:900;color:#173f60}
+    .pc-ban-group-note{margin:0 0 12px;color:var(--text-secondary);font-size:12px;line-height:1.75}
+    .pc-ban-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .pc-ban-shot{margin:0;border:1px solid var(--border-light);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,.06)}
+    .pc-ban-shot img{width:100%;height:210px;object-fit:cover;display:block;background:#f3f6fb}
+    .pc-ban-shot figcaption{padding:9px 11px;font-size:12px;font-weight:800;line-height:1.6;color:#334155;background:#fff}
+    .pc-ban-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .pc-ban-tag{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#fff3f2;color:#cf4b3f;font-size:10px;font-weight:900;border:1px solid #ffd4cf}
+    .pc-ban-finalnote{margin-top:14px;padding:12px 14px;border-radius:14px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.8;font-weight:800;border:1px solid #fed7aa}
+    @media(min-width:760px){.pc-ban-grid.cols-2{grid-template-columns:1fr 1fr}.pc-ban-shot img{height:230px}}
+    @media(max-width:759px){.pc-ban-shot img{height:auto;max-height:none;object-fit:contain}.pc-ban-shot{background:#fff}.pc-ban-shot figcaption{padding:10px 12px}}
+
+
+
+    /* === シフト確認・注意点 === */
+    .sg-hero{background:linear-gradient(135deg,#173f61,#24658f);border-radius:18px;padding:20px;color:#fff;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .sg-hero .kicker{font-size:11px;font-weight:900;letter-spacing:.14em;opacity:.78;margin-bottom:6px}
+    .sg-hero h3{margin:0 0 8px;font-size:22px;line-height:1.35;font-weight:900}
+    .sg-hero p{margin:0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.9)}
+    .sg-warning{background:#fff3f0;border:2px solid #ef4444;border-radius:16px;padding:16px;margin:14px 0 18px}
+    .sg-warning h4{margin:0 0 8px;color:#c62828;font-size:17px;font-weight:900}
+    .sg-warning p{margin:0;color:#7f1d1d;font-size:13px;line-height:1.8;font-weight:750}
+    .sg-box{background:#fff;border:1px solid var(--border-light);border-radius:16px;padding:18px;margin:14px 0;box-shadow:var(--shadow-sm)}
+    .sg-box h4{margin:0 0 12px;font-size:17px;font-weight:900;color:var(--text-primary)}
+    .sg-step{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--border-thin)}
+    .sg-step:first-of-type{border-top:0;padding-top:0}
+    .sg-step:last-child{padding-bottom:0}
+    .sg-n{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:#1976a8;color:#fff;font-weight:900}
+    .sg-step strong{display:block;margin-bottom:4px;font-size:14px;color:var(--text-primary)}
+    .sg-step p{margin:0;font-size:13px;line-height:1.75;color:var(--text-secondary)}
+    .sg-callout{margin-top:12px;background:#fff8df;border:1px solid #efc44d;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.75;color:#665014;font-weight:800}
+    .sg-ok{background:#effaf4;border-color:#bfe7cf}.sg-ok .sg-n{background:#2f9d62}
+
+    /* === エリアと番地の把握 === */
+    .aa-hero{background:#fff8df;border:1px solid #f0c94b;border-radius:16px;padding:16px 18px;margin-bottom:16px;}
+    .aa-hero strong{display:block;font-size:14px;margin-bottom:6px;color:var(--text-primary);}
+    .aa-hero p{margin:0;font-size:13px;line-height:1.75;color:var(--text-secondary);}
+    .aa-compare{display:grid;grid-template-columns:1fr;gap:14px;margin:16px 0;}
+    .aa-card{border-radius:18px;padding:18px;border:2px solid;background:#fff;}
+    .aa-card.area{border-color:#2f9bd1;background:#eff9ff;}
+    .aa-card.address{border-color:#2fb06d;background:#effbf4;}
+    .aa-pill{display:inline-block;border-radius:999px;padding:7px 22px;color:#fff;font-weight:900;font-size:15px;margin-bottom:12px;}
+    .aa-card.area .aa-pill{background:#2f9bd1;}
+    .aa-card.address .aa-pill{background:#2fb06d;}
+    .aa-card h3{margin:0 0 5px;font-size:18px;color:var(--text-primary);}
+    .aa-card p{margin:0 0 12px;font-size:12px;line-height:1.65;color:var(--text-secondary);}
+    .aa-area-map{position:relative;height:150px;border-radius:14px;background:#fff;border:1px solid #d9e7ef;overflow:hidden;}
+    .aa-area-map::before,.aa-area-map::after{content:'';position:absolute;background:#dfe7eb;}
+    .aa-area-map::before{left:8%;right:8%;height:7px;top:52%;}
+    .aa-area-map::after{top:12%;bottom:12%;width:7px;left:55%;}
+    .aa-area-outline{position:absolute;left:13%;top:22%;width:70%;height:55%;transform:skew(-3deg);overflow:visible;}
+    .aa-area-outline polygon{fill:#ef4444;fill-opacity:.10;stroke:#b91c1c;stroke-width:4;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
+    .aa-area-label{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:12px;font-weight:800;color:#b91c1c;}
+    .aa-address-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #d8e4dd;border-radius:14px;overflow:hidden;background:#fff;}
+    .aa-address-cell{min-height:60px;display:grid;place-items:center;font-weight:800;font-size:16px;color:#244;border-right:1px solid #d8e4dd;border-bottom:1px solid #d8e4dd;}
+    .aa-address-cell:nth-child(3n){border-right:none}.aa-address-cell:nth-child(n+4){border-bottom:none}
+    .aa-address-cell.current span{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:4px solid #2fb06d;}
+    .aa-address-note{text-align:center;margin-top:8px;font-size:11px;font-weight:800;color:#2fb06d;}
+    .aa-misunderstand{border:2px solid #ef4b43;background:#fff1ef;border-radius:16px;padding:16px 18px;margin:16px 0;}
+    .aa-misunderstand .label{display:inline-block;background:#ef4b43;color:#fff;border-radius:999px;padding:6px 18px;font-size:12px;font-weight:900;margin-bottom:10px;}
+    .aa-misunderstand strong{display:block;font-size:14px;color:#23364b;margin-bottom:4px;}
+    .aa-misunderstand p{margin:0;font-size:12px;line-height:1.7;color:var(--text-secondary);}
+    .aa-checks{background:#f7fafc;border:1px solid var(--border-light);border-radius:18px;padding:18px;margin-top:16px;}
+    .aa-checks h3{margin:0 0 14px;font-size:18px;color:var(--text-primary);}
+    .aa-check{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;margin:12px 0;}
+    .aa-check-num{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#174f76;color:#fff;font-weight:900;}
+    .aa-check strong{display:block;font-size:14px;margin-bottom:2px;color:var(--text-primary);}
+    .aa-check span{display:block;font-size:12px;line-height:1.65;color:var(--text-secondary);}
+    .aa-next{margin-top:16px;border:2px solid #2f9bd1;background:#eef8ff;border-radius:16px;padding:17px 18px;}
+    .aa-next h3{margin:0 0 10px;font-size:16px;color:#2f9bd1;}
+    .aa-next strong{display:block;font-size:14px;color:var(--text-primary);margin-bottom:5px;}
+    .aa-next p{margin:0;font-size:12px;line-height:1.75;color:var(--text-secondary);}
+    @media(min-width:760px){.aa-compare{grid-template-columns:1fr 1fr}.aa-area-map{height:170px}}
+
+    /* === 詰め配布とは === */
+    .td-hero{background:linear-gradient(135deg,#173f60 0%,#21597f 100%);color:#fff;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .td-hero .kicker{font-size:11px;letter-spacing:.14em;font-weight:900;opacity:.78;margin-bottom:5px}
+    .td-hero h3{margin:0 0 8px;font-size:22px;line-height:1.35;font-weight:900}
+    .td-hero p{margin:0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.92)}
+    .td-section{background:#fff;border:1px solid var(--border-light);border-radius:18px;padding:18px;margin:16px 0;box-shadow:var(--shadow-sm)}
+    .td-section-head{display:flex;gap:11px;align-items:center;margin-bottom:12px}
+    .td-num{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2d99cf;color:#fff;font-weight:900;flex:0 0 38px}
+    .td-num.orange{background:#ff9f1c}.td-num.green{background:#2fb06d}
+    .td-section h3{margin:0;font-size:18px;font-weight:900;color:var(--text-primary)}
+    .td-section p{margin:0;font-size:13px;line-height:1.75;color:var(--text-secondary)}
+    .td-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+    .td-card{border:none;border-radius:0;overflow:visible;background:transparent}
+    .td-card.blue,.td-card.orange{border:none;background:transparent}
+    .td-card img{width:100%;height:auto;display:block;object-fit:contain;object-position:center;background:transparent;padding:0}
+    .td-card-body{display:none}
+    .td-rule{margin-top:14px;border:2px solid #2fb06d;background:#effaf4;border-radius:16px;padding:15px 16px}
+    .td-rule strong{display:block;color:#177a45;font-size:15px;margin-bottom:5px}.td-rule p{margin:0;color:#356b51;font-size:12px;line-height:1.7}
+    .td-danger{margin-top:14px;border:2px solid #ef4b43;background:#fff1ef;border-radius:16px;padding:15px 16px}
+    .td-danger strong{display:block;color:#d73730;font-size:15px;margin-bottom:5px}.td-danger p{margin:0;color:#7f3d39;font-size:12px;line-height:1.7}
+    .td-targets{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+    .td-target{border-radius:16px;overflow:hidden;border:2px solid;background:#fff}
+    .td-target.ok{border-color:#22a44b;background:#f0fff5}.td-target.ng{border-color:#e43b3b;background:#fff2f2}
+    .td-target-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 12px;color:#fff;font-size:17px;font-weight:900}
+    .td-target.ok .td-target-label{background:#13973a}.td-target.ng .td-target-label{background:#d92727}
+    .td-target img{width:100%;height:240px;object-fit:cover;display:block}
+    .td-target-copy{padding:13px 14px 15px;text-align:center}.td-target-copy strong{display:block;font-size:17px;color:var(--text-primary);margin-bottom:4px}.td-target-copy span{font-size:12px;font-weight:800;color:var(--text-secondary)}
+    .td-caution{margin-top:14px;background:#fff0ef;border:1px solid #efb3ae;border-radius:14px;padding:14px 16px;color:#c92d2d;font-size:14px;font-weight:900;line-height:1.6}
+    .td-help{margin-top:12px;background:#fff6d8;border:1px solid #efc44d;border-radius:14px;padding:13px 15px;color:#665018;font-size:12px;font-weight:850;line-height:1.7}
+    @media(min-width:760px){.td-grid,.td-targets{grid-template-columns:1fr 1fr}.td-target img{height:300px}}
+
+
+  
+    /* === 対象物件の例 === */
+    .tp-hero{background:linear-gradient(135deg,#183f60 0%,#245b80 100%);color:#fff;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .tp-hero .kicker{font-size:11px;letter-spacing:.14em;font-weight:900;opacity:.78;margin-bottom:5px}
+    .tp-hero h3{margin:0 0 8px;font-size:22px;line-height:1.35;font-weight:900}
+    .tp-hero p{margin:0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.92)}
+    .tp-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+    .tp-card{border-radius:18px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+    .tp-card.ok{border:2px solid #22a44b}.tp-card.ng{border:2px solid #e33d3d}
+    .tp-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;color:#fff;font-size:18px;font-weight:900}
+    .tp-card.ok .tp-label{background:#16973c}.tp-card.ng .tp-label{background:#d92d2d}
+    .tp-photo{background:#fff;padding:12px 12px 0}
+    .tp-photo img{display:block;width:100%;height:auto;object-fit:contain;object-position:center;background:#fff}
+    .tp-copy{text-align:center;padding:12px 14px 16px}
+    .tp-copy strong{display:block;font-size:18px;color:var(--text-primary);margin-bottom:4px}
+    .tp-copy span{font-size:13px;font-weight:850;color:var(--text-secondary)}
+    .tp-note{margin-top:16px;border:2px solid #ef4444;background:#fff1f0;border-radius:15px;padding:14px 16px;color:#9b1c1c;font-size:14px;font-weight:900;line-height:1.7;text-align:center}
+    @media(min-width:760px){.tp-grid{grid-template-columns:1fr 1fr}}
+
+    /* === 1日の流れ（出勤～退勤まで） === */
+    .df-hero{background:linear-gradient(135deg,#183f60 0%,#245b80 100%);color:#fff;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .df-hero .kicker{font-size:11px;letter-spacing:.14em;font-weight:900;opacity:.78;margin-bottom:5px}
+    .df-hero h3{margin:0 0 8px;font-size:22px;line-height:1.35;font-weight:900}
+    .df-hero p{margin:0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.92)}
+    .df-timeline{display:grid;gap:12px;margin-top:16px}
+    .df-step{display:grid;grid-template-columns:66px 1fr;gap:13px;align-items:start;border:1px solid var(--border-light);background:#fff;border-radius:16px;padding:14px;box-shadow:var(--shadow-xs)}
+    .df-time{background:#eef6fb;color:#17608d;border-radius:12px;padding:10px 6px;text-align:center;font-size:12px;font-weight:900;line-height:1.35}
+    .df-step h4{margin:1px 0 5px;font-size:16px;font-weight:900;color:var(--text-primary)}
+    .df-step p{margin:0;font-size:12.5px;line-height:1.75;color:var(--text-secondary);font-weight:650}
+    .df-end-actions{display:grid;gap:8px;margin-top:10px}
+    .df-end-action{display:flex;gap:9px;align-items:flex-start;background:#f7fafc;border:1px solid #e2e8ef;border-radius:11px;padding:10px 11px;font-size:12px;line-height:1.6;color:#334155;font-weight:800}
+    .df-end-action b{flex:0 0 22px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#17608d;color:#fff;font-size:11px}
+    .df-end-note{margin-top:9px;background:#fff8df;border:1px solid #f0c94b;border-radius:11px;padding:10px 11px;color:#6c5617;font-size:12px;line-height:1.7;font-weight:850}
+    .df-panel{margin-top:16px;border:1px solid var(--border-light);background:#fff;border-radius:18px;padding:18px;box-shadow:var(--shadow-sm)}
+    .df-panel h4{margin:0 0 12px;font-size:17px;font-weight:900;color:var(--text-primary)}
+    .df-offices{display:grid;grid-template-columns:1fr;gap:10px}
+    .df-office{padding:12px 13px;border-radius:13px;background:#f7fafc;border:1px solid #e2e8ef}
+    .df-office strong{display:block;font-size:13px;color:#173f60;margin-bottom:3px}
+    .df-office span{font-size:12px;line-height:1.65;color:var(--text-secondary);font-weight:700}
+    .df-checks{display:grid;grid-template-columns:1fr;gap:9px}
+    .df-check{display:flex;gap:10px;align-items:flex-start;background:#f4faf6;border:1px solid #d6eadc;border-radius:12px;padding:11px 12px;font-size:12.5px;line-height:1.6;color:#315c43;font-weight:800}
+    .df-check b{flex:0 0 22px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#2f9f61;color:#fff;font-size:12px}
+    .df-rule{margin-top:14px;background:#fff6d8;border:1px solid #efc44d;border-radius:13px;padding:12px 14px;color:#665018;font-size:12px;font-weight:850;line-height:1.7}
+    .df-final{margin-top:18px;background:linear-gradient(135deg,#f6fbf7 0%,#eef7f1 100%);border:1px solid #cfe6d7;border-radius:18px;padding:18px}
+    .df-final .kicker{font-size:11px;letter-spacing:.13em;color:#2f7a4e;font-weight:900;margin-bottom:6px}
+    .df-final h4{margin:0 0 9px;font-size:19px;line-height:1.4;color:#205b3b;font-weight:900}
+    .df-final p{margin:0;font-size:13px;line-height:1.9;color:#3f654e;font-weight:700}
+    @media(min-width:760px){.df-offices{grid-template-columns:1fr 1fr}.df-checks{grid-template-columns:1fr 1fr}.df-step{grid-template-columns:90px 1fr}.df-time{font-size:13px}}
+
+
+    /* === モバイル目次 / ハンバーガーメニュー === */
+    .toc-menu-btn{
+      position:fixed; top:14px; left:14px; z-index:1002;
+      width:44px; height:44px; border:1px solid rgba(0,0,0,.08); border-radius:13px;
+      background:rgba(255,255,255,.96); box-shadow:0 4px 16px rgba(0,0,0,.12);
+      display:grid; place-items:center; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    }
+    .toc-menu-btn span,.toc-menu-btn span::before,.toc-menu-btn span::after{
+      display:block; width:21px; height:2.5px; border-radius:999px; background:#1f2937; position:relative;
+      transition:.2s ease;
+    }
+    .toc-menu-btn span::before,.toc-menu-btn span::after{content:'';position:absolute;left:0}
+    .toc-menu-btn span::before{top:-7px}.toc-menu-btn span::after{top:7px}
+    .toc-menu-btn.is-open span{background:transparent}
+    .toc-menu-btn.is-open span::before{top:0;transform:rotate(45deg)}
+    .toc-menu-btn.is-open span::after{top:0;transform:rotate(-45deg)}
+
+    .toc-overlay{
+      position:fixed; inset:0; background:rgba(15,23,42,.42); z-index:1000;
+      opacity:0; visibility:hidden; transition:.22s ease;
+    }
+    .toc-overlay.is-open{opacity:1;visibility:visible}
+    .toc-drawer{
+      position:fixed; top:0; left:0; bottom:0; width:min(86vw,360px); z-index:1001;
+      background:#f8faf9; box-shadow:12px 0 30px rgba(15,23,42,.18);
+      transform:translateX(-105%); transition:transform .24s ease;
+      overflow-y:auto; overscroll-behavior:contain; padding:76px 14px 28px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .toc-drawer.is-open{transform:translateX(0)}
+    .toc-title{font-size:22px;font-weight:950;color:#17231c;margin:0 6px 5px}
+    .toc-subtitle{font-size:12px;color:#6b746e;margin:0 6px 18px;line-height:1.6}
+    .toc-home,.toc-item{
+      width:100%; border:0; background:transparent; text-align:left; cursor:pointer; color:inherit;
+      font-family:inherit; -webkit-tap-highlight-color:transparent;
+    }
+    .toc-home{
+      display:flex;align-items:center;gap:10px;padding:12px 12px;margin-bottom:12px;
+      border-radius:12px;background:#fff;border:1px solid #e3e8e4;font-weight:900;font-size:14px;
+    }
+    .toc-group{margin:14px 0 18px}
+    .toc-group-title{font-size:12px;font-weight:950;color:#2d7a4f;letter-spacing:.06em;padding:0 9px 7px;text-transform:none}
+    .toc-list{display:grid;gap:5px}
+    .toc-item{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:11px 11px;border-radius:11px;font-size:13px;font-weight:800;line-height:1.45;
+    }
+    .toc-item:hover,.toc-item:active{background:#edf5ef}
+    .toc-item.active{background:#e4f2e8;color:#196c3b}
+    .toc-item .toc-arrow{font-size:18px;color:#8d9790;line-height:1}
+    .toc-item.toc-sub{padding-left:27px;font-size:12.5px;color:#536159;position:relative}
+    .toc-item.toc-sub::before{content:'';position:absolute;left:14px;top:50%;width:5px;height:5px;border-radius:50%;background:#b2beb6;transform:translateY(-50%)}
+    .toc-external{color:#225f91}
+    body.toc-lock{overflow:hidden;touch-action:none}
+    @media (min-width:900px){
+      .toc-menu-btn{left:max(18px,calc((100vw - 980px)/2 - 56px))}
+      .toc-drawer{width:360px}
+    }
+
+  
+
+    /* === MOBILE FIRST OVERRIDES (main usage: smartphone) === */
+    @media (max-width: 767px) {
+      html { -webkit-text-size-adjust: 100%; }
+      body { font-size: 15px; overflow-x: hidden; }
+      .app { width: 100%; max-width: 100%; }
+      .header { padding: 18px 58px 16px; }
+      .header h1 { font-size: 20px; line-height: 1.25; }
+      .header p { font-size: 9px; letter-spacing: .11em; }
+      .content { padding: 16px 12px 112px; overflow-x: hidden; }
+
+      /* page shells */
+      .section-title {
+        padding: 14px 14px 12px;
+        font-size: 16px;
+        line-height: 1.35;
+        border-radius: 14px 14px 0 0;
+      }
+      .section-card {
+        padding: 14px;
+        border-radius: 0 0 14px 14px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .portal-section { margin-bottom: 20px; }
+      .portal-section-head { margin: 0 2px 10px; align-items: flex-start; }
+      .portal-section-title { font-size: 16px; line-height: 1.35; }
+      .portal-section-desc { font-size: 12px; line-height: 1.55; }
+      .portal-hero { padding: 20px 16px; border-radius: 16px; }
+      .portal-title { font-size: 21px; line-height: 1.35; }
+      .portal-copy { font-size: 13px; line-height: 1.7; }
+
+      /* all selection cards: one full-width row, never two narrow columns */
+      .portal-grid,
+      .report-guide-grid,
+      .banned-grid,
+      .aa-compare,
+      .td-grid,
+      .td-targets,
+      .tp-grid,
+      .df-offices,
+      .df-checks,
+      .rg-gallery,
+      .rg-gallery.two {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      .portal-grid > * { grid-column: auto !important; min-width: 0; }
+      .portal-card {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 12px;
+        gap: 12px;
+        align-items: center;
+        border-radius: 14px;
+      }
+      .portal-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
+        flex: 0 0 48px;
+      }
+      .portal-card-icon svg { width: 25px; height: 25px; }
+      .portal-card-body { min-width: 0; width: auto; }
+      .portal-card-title {
+        font-size: 16px;
+        line-height: 1.4;
+        margin-bottom: 4px;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+      .portal-card-desc {
+        font-size: 13px;
+        line-height: 1.6;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+      .portal-arrow { font-size: 24px; padding-left: 2px; }
+
+      /* Rain page: explicit full-width list on phones */
+      #rainDeliveryScreen .portal-grid { display: grid !important; grid-template-columns: 1fr !important; }
+      #rainDeliveryScreen .portal-card { min-height: 84px; }
+      #rainDeliveryScreen .section-card > h3 { font-size: 19px !important; }
+      #rainDeliveryScreen .section-card > p { font-size: 13px !important; line-height: 1.65 !important; }
+
+      /* common content cards */
+      .pc-card, .aa-card, .td-card, .tp-card, .df-step, .rg-section,
+      .report-guide-card, .report-guide-lead {
+        border-radius: 14px;
+      }
+      .pc-card, .aa-card, .td-card, .tp-card, .rg-section,
+      .report-guide-card, .report-guide-lead { padding: 14px; }
+      .pc-card-head { grid-template-columns: 40px minmax(0,1fr) auto; gap: 10px; }
+      .pc-num { width: 40px; height: 40px; font-size: 16px; }
+      .pc-card h4 { font-size: 16px; }
+      .pc-card p { font-size: 13px; }
+      .aa-check { grid-template-columns: 38px minmax(0,1fr); gap: 10px; }
+      .df-step { grid-template-columns: 58px minmax(0,1fr) !important; padding: 12px; }
+      .df-time { font-size: 12px; line-height: 1.35; }
+
+      /* images/media should fit the viewport without cropping */
+      img, svg, video { max-width: 100%; }
+      .pc-shot img, .tp-photo img, .td-target img, .rg-photo img,
+      .td-card img { width: 100%; height: auto !important; object-fit: contain !important; }
+      video { width: 100% !important; height: auto !important; max-height: 72vh !important; border-radius: 12px; }
+
+      /* tables can scroll instead of crushing columns */
+      .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .table-container table { min-width: 560px; }
+
+      /* forms/tappable controls */
+      .field input, .field select, .field textarea { font-size: 16px; min-height: 46px; }
+      .btn { min-height: 48px; font-size: 15px; }
+      .toc-item, .toc-home { min-height: 46px; }
+
+      /* drawer and menu button sized for thumb use */
+      .toc-menu-btn {
+        width: 52px;
+        height: 52px;
+        left: max(10px, env(safe-area-inset-left));
+        top: calc(12px + env(safe-area-inset-top));
+        border-radius: 15px;
+      }
+      .toc-drawer { width: min(88vw, 350px); padding-top: calc(74px + env(safe-area-inset-top)); }
+      .toc-title { font-size: 21px; }
+      .toc-item { font-size: 14px; padding: 12px; }
+      .toc-item.toc-sub { font-size: 13.5px; padding-left: 28px; }
+
+      /* long text must never form vertical-looking columns */
+      h1,h2,h3,h4,p,span,strong,button,a,div {
+        overflow-wrap: break-word;
+      }
+    }
+
+
+
+    /* =========================================================
+       MOBILE PLAY MODE — internal edition
+       ========================================================= */
+    :root{
+      --play-green:#27a85b;
+      --play-lime:#b9f36b;
+      --play-blue:#4f7cff;
+      --play-cyan:#2ec5ce;
+      --play-violet:#8758ff;
+      --play-orange:#ff9c42;
+      --play-pink:#ff6b8a;
+      --play-ink:#112018;
+    }
+
+    body{
+      background:
+        radial-gradient(circle at 12% 2%, rgba(185,243,107,.17), transparent 24%),
+        radial-gradient(circle at 88% 10%, rgba(79,124,255,.10), transparent 26%),
+        #f6f8f5;
+    }
+
+    /* top reading progress */
+    .play-progress{
+      position:fixed; inset:0 0 auto 0; height:4px; z-index:2000;
+      background:rgba(17,32,24,.06); pointer-events:none;
+    }
+    .play-progress > span{
+      display:block; height:100%; width:0%;
+      background:linear-gradient(90deg,var(--play-green),var(--play-lime),var(--play-cyan),var(--play-violet));
+      border-radius:0 999px 999px 0;
+      box-shadow:0 0 14px rgba(39,168,91,.35);
+      transition:width .08s linear;
+    }
+
+    .header{
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(16px) saturate(140%);
+      -webkit-backdrop-filter:blur(16px) saturate(140%);
+      border-bottom:0;
+      box-shadow:0 8px 28px rgba(19,57,36,.06);
+    }
+    .header::after{
+      content:''; position:absolute; left:0; right:0; bottom:0; height:4px;
+      background:linear-gradient(90deg,var(--play-green),var(--play-lime),var(--play-cyan),var(--play-violet));
+      background-size:220% 100%; animation:playStripe 7s linear infinite;
+    }
+    @keyframes playStripe{to{background-position:220% 0}}
+
+    .content{position:relative; isolation:isolate;}
+    .content::before,.content::after{
+      content:''; position:fixed; z-index:-1; border-radius:50%; filter:blur(2px); pointer-events:none;
+    }
+    .content::before{width:180px;height:180px;right:-90px;top:18vh;background:rgba(185,243,107,.12)}
+    .content::after{width:150px;height:150px;left:-82px;bottom:8vh;background:rgba(79,124,255,.08)}
+
+    .portal-hero{
+      position:relative; overflow:hidden;
+      background:linear-gradient(145deg,#10291d 0%,#174d31 48%,#1c7042 100%) !important;
+      color:#fff !important; border:0 !important;
+      box-shadow:0 18px 44px rgba(20,75,44,.20) !important;
+      border-radius:24px !important;
+      padding:26px 22px !important;
+    }
+    .portal-hero::before{
+      content:''; position:absolute; width:180px; height:180px; border-radius:50%;
+      right:-58px; top:-72px; background:linear-gradient(135deg,rgba(185,243,107,.50),rgba(46,197,206,.12));
+      animation:playFloat 7s ease-in-out infinite;
+    }
+    .portal-hero::after{
+      content:'↗'; position:absolute; right:20px; bottom:9px; font-size:82px; line-height:1;
+      font-weight:900; color:rgba(255,255,255,.055); transform:rotate(-8deg);
+    }
+    @keyframes playFloat{50%{transform:translate(-10px,14px) scale(1.05)}}
+    .portal-eyebrow{
+      display:inline-flex !important; width:auto !important; align-items:center; gap:6px;
+      background:rgba(255,255,255,.13) !important; color:#dffff0 !important;
+      border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:7px 11px !important;
+      backdrop-filter:blur(8px);
+    }
+    .portal-eyebrow::before{content:'●'; color:var(--play-lime); font-size:9px; animation:playPulse 1.9s ease-in-out infinite}
+    @keyframes playPulse{50%{opacity:.35; transform:scale(.8)}}
+    .portal-title,.portal-copy{position:relative; z-index:1; color:#fff !important; -webkit-text-fill-color:initial !important;}
+    .portal-title{font-size:clamp(22px,6.4vw,30px) !important; letter-spacing:-.04em !important; line-height:1.35 !important;}
+    .portal-copy{color:rgba(255,255,255,.78) !important;}
+
+    #homeScreen .portal-section{
+      position:relative; margin-top:28px !important; padding-top:4px;
+    }
+    #homeScreen .portal-section-head{margin-bottom:13px !important;}
+    #homeScreen .portal-section-title{
+      display:flex; align-items:center; gap:9px; font-size:20px !important; letter-spacing:-.02em;
+    }
+    #homeScreen .portal-section-title::before{
+      content:''; width:9px; height:24px; border-radius:999px; flex:0 0 auto;
+      background:linear-gradient(180deg,var(--play-green),var(--play-lime));
+      box-shadow:0 5px 14px rgba(39,168,91,.22);
+    }
+    #homeScreen .portal-section:nth-of-type(2) .portal-section-title::before{background:linear-gradient(180deg,var(--play-violet),var(--play-blue));}
+    #homeScreen .portal-section:nth-of-type(3) .portal-section-title::before{background:linear-gradient(180deg,var(--play-orange),#ffd36a);}
+    #homeScreen .portal-section:nth-of-type(4) .portal-section-title::before{background:linear-gradient(180deg,var(--play-cyan),var(--play-blue));}
+
+    .portal-card{
+      border:1px solid rgba(20,55,34,.08) !important;
+      border-radius:20px !important;
+      box-shadow:0 8px 22px rgba(20,55,34,.07) !important;
+      background:rgba(255,255,255,.94) !important;
+      transform:translateZ(0);
+      transition:transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease, border-color .22s ease !important;
+      overflow:hidden;
+    }
+    .portal-card::before{
+      content:''; position:absolute; left:0; top:0; bottom:0; width:5px;
+      background:linear-gradient(180deg,var(--play-green),var(--play-lime)); opacity:.82;
+    }
+    .portal-card:nth-child(3n+2)::before{background:linear-gradient(180deg,var(--play-blue),var(--play-cyan));}
+    .portal-card:nth-child(3n)::before{background:linear-gradient(180deg,var(--play-orange),var(--play-pink));}
+    .portal-card:active{transform:scale(.975) translateY(1px) !important; box-shadow:0 3px 10px rgba(20,55,34,.08) !important;}
+    .portal-card-icon{
+      border-radius:16px !important;
+      background:linear-gradient(145deg,#effbf3,#e4f7e9) !important;
+      box-shadow:inset 0 0 0 1px rgba(39,168,91,.06),0 8px 18px rgba(39,168,91,.08);
+    }
+    .portal-arrow{font-size:24px !important; transition:transform .2s ease;}
+    .portal-card:active .portal-arrow{transform:translateX(4px)}
+    .portal-badge{
+      border-radius:999px !important; padding:4px 8px !important;
+      background:linear-gradient(135deg,#173f2b,#2d9c4a) !important; color:#fff !important;
+      border:0 !important; box-shadow:0 4px 10px rgba(45,156,74,.18);
+    }
+    .portal-mini-note{
+      border:0 !important; border-radius:18px !important;
+      background:linear-gradient(135deg,#effbf2,#f6ffeb) !important;
+      box-shadow:inset 0 0 0 1px rgba(39,168,91,.10);
+    }
+
+    /* inner pages */
+    .section-card,.rg-section,.pc-card,.aa-card,.skill-card{
+      border-radius:20px !important;
+      box-shadow:0 8px 24px rgba(20,55,34,.06) !important;
+    }
+    .section-title{
+      font-size:22px !important; letter-spacing:-.035em !important;
+      display:flex; align-items:center; gap:10px;
+    }
+    .section-title::before{
+      content:''; display:block; width:11px; height:29px; border-radius:999px;
+      background:linear-gradient(180deg,var(--play-green),var(--play-lime));
+      box-shadow:0 6px 14px rgba(39,168,91,.18);
+      flex:0 0 auto;
+    }
+
+    /* drawer with personality */
+    .toc-menu-btn{
+      border:1px solid rgba(255,255,255,.72) !important;
+      background:rgba(255,255,255,.88) !important;
+      backdrop-filter:blur(15px) saturate(150%);
+      -webkit-backdrop-filter:blur(15px) saturate(150%);
+      box-shadow:0 12px 30px rgba(17,42,27,.15) !important;
+      animation:menuBreathe 3.2s ease-in-out infinite;
+    }
+    @keyframes menuBreathe{50%{box-shadow:0 15px 34px rgba(39,168,91,.22); transform:translateY(-1px)}}
+    .toc-drawer{
+      background:rgba(248,252,249,.96) !important;
+      backdrop-filter:blur(22px) saturate(145%);
+      -webkit-backdrop-filter:blur(22px) saturate(145%);
+      border-right:1px solid rgba(255,255,255,.85) !important;
+      box-shadow:24px 0 60px rgba(13,43,25,.18) !important;
+    }
+    .toc-title{font-size:26px !important; letter-spacing:-.04em;}
+    .toc-title::after{content:'  /  QUICK JUMP'; color:#2d9c4a; font-size:10px; letter-spacing:.14em; vertical-align:middle;}
+    .toc-group-title{color:#1d5133 !important;}
+    .toc-item,.toc-home{border-radius:14px !important; transition:.18s ease !important;}
+    .toc-item:active,.toc-home:active{transform:scale(.98); background:#e8f6ec !important;}
+    .toc-item.active{background:linear-gradient(135deg,#dff4e5,#f0fae8) !important; box-shadow:inset 0 0 0 1px rgba(39,168,91,.13);}
+
+    /* media / video cards */
+    video{border-radius:18px !important; box-shadow:0 16px 38px rgba(14,35,22,.16) !important; background:#0d1711;}
+    figure img{border-radius:14px;}
+
+    /* floating top button */
+    .play-top{
+      position:fixed; right:16px; bottom:calc(84px + env(safe-area-inset-bottom)); z-index:950;
+      width:48px; height:48px; border:0; border-radius:16px; display:grid; place-items:center;
+      background:linear-gradient(145deg,#173f2b,#2d9c4a); color:#fff; font-size:22px; font-weight:900;
+      box-shadow:0 12px 30px rgba(39,168,91,.28); opacity:0; transform:translateY(10px) scale(.88);
+      pointer-events:none; transition:.2s ease;
+    }
+    .play-top.show{opacity:1;transform:none;pointer-events:auto}
+    .play-top:active{transform:scale(.92)}
+
+    /* touch ripple */
+    .play-ripple{
+      position:absolute; border-radius:50%; transform:scale(0); pointer-events:none;
+      background:rgba(45,156,74,.15); animation:ripplePop .5s ease-out;
+    }
+    @keyframes ripplePop{to{transform:scale(4);opacity:0}}
+
+    @media (max-width:759px){
+      .content{padding-left:14px !important;padding-right:14px !important;}
+      .portal-hero{margin-left:-2px;margin-right:-2px;}
+      .portal-card{min-height:92px !important;padding:14px 13px 14px 17px !important;gap:12px !important;}
+      .portal-card-title{font-size:16px !important;line-height:1.45 !important;}
+      .portal-card-desc{font-size:12.5px !important;line-height:1.65 !important;}
+      .portal-card-icon{width:50px !important;height:50px !important;flex:0 0 50px !important;}
+      .section-card{padding:16px !important;}
+      .footer{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255,255,255,.88) !important;}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;}
+    }
+
+  
+    /* === 禁止物件の通過報告 === */
+    .bp-hero{background:linear-gradient(135deg,#1b2530 0%,#263847 58%,#314b5b 100%);color:#fff;border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
+    .bp-hero:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-55px;top:-70px;background:rgba(239,68,68,.18)}
+    .bp-kicker{font-size:11px;letter-spacing:.16em;font-weight:900;color:#fca5a5;margin-bottom:7px}.bp-hero h3{font-size:22px;line-height:1.4;margin:0 0 8px;font-weight:900}.bp-hero p{font-size:13px;line-height:1.8;margin:0;color:rgba(255,255,255,.9)}
+    .bp-important{margin-top:14px;padding:12px 14px;border-radius:13px;background:rgba(239,68,68,.15);border:1px solid rgba(248,113,113,.4);font-size:13px;font-weight:850;line-height:1.75;color:#fff}
+    .bp-step{background:#fff;border:1px solid var(--border-light);border-radius:18px;padding:17px;margin:14px 0;box-shadow:var(--shadow-sm)}
+    .bp-step-head{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start}.bp-n{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#e53935;color:#fff;font-size:17px;font-weight:900}.bp-step h4{font-size:17px;line-height:1.45;margin:2px 0 5px;font-weight:900}.bp-step p{font-size:13px;line-height:1.85;margin:0;color:var(--text-secondary)}
+    .bp-photo{margin:14px 0 0;border-radius:15px;overflow:hidden;border:1px solid var(--border-light);background:#f7f8fa}.bp-photo img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;background:#f7f8fa}.bp-photo figcaption{padding:10px 12px;font-size:11px;font-weight:850;color:#53606b;text-align:center;background:#fff;border-top:1px solid var(--border-light)}
+    .bp-example{margin-top:12px;border-radius:13px;background:#f6f8fb;border:1px solid #dde3ea;padding:12px 14px}.bp-example strong{display:block;font-size:12px;color:#273444;margin-bottom:5px}.bp-example span{display:block;font-size:13px;line-height:1.75;font-weight:800;color:#111827}
+    .bp-reason{margin:16px 0;padding:16px;border-radius:16px;border:2px solid #ef4444;background:#fff4f4}.bp-reason h4{margin:0 0 7px;color:#b91c1c;font-size:16px;font-weight:900}.bp-reason p{margin:0;color:#7f1d1d;font-size:13px;line-height:1.85;font-weight:700}.bp-reason strong{color:#991b1b}
+    .bp-summary{display:grid;gap:9px;margin:14px 0}.bp-summary-row{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:11px 12px;background:#f8fafc;border:1px solid var(--border-light);border-radius:12px}.bp-summary-check{width:28px;height:28px;border-radius:9px;background:#e8f7ee;color:#1f9d55;display:grid;place-items:center;font-weight:900}.bp-summary-row div:last-child{font-size:13px;line-height:1.7;font-weight:750;color:#334155}
+    @media(max-width:600px){.bp-hero{padding:18px 16px;border-radius:17px}.bp-hero h3{font-size:20px}.bp-step{padding:15px 14px;border-radius:16px}.bp-step-head{grid-template-columns:38px 1fr;gap:10px}.bp-n{width:38px;height:38px;border-radius:11px}.bp-step h4{font-size:16px}.bp-photo{border-radius:13px}.bp-photo img{width:100%;height:auto;object-fit:contain}}
+
+  </style>
+</head>
+<body>
+  <div class="play-progress" aria-hidden="true"><span id="playProgressBar"></span></div>
+  <button class="play-top" id="playTopBtn" type="button" aria-label="ページ上部へ戻る">↑</button>
+
+  <button class="toc-menu-btn" id="tocMenuBtn" type="button" aria-label="目次を開く" aria-controls="tocDrawer" aria-expanded="false"><span></span></button>
+  <div class="toc-overlay" id="tocOverlay" onclick="closeToc()"></div>
+  <nav class="toc-drawer" id="tocDrawer" aria-label="ページ目次">
+    <h2 class="toc-title">目次</h2>
+    <p class="toc-subtitle">見たい項目をタップすると、そのページへ移動します。</p>
+    <button class="toc-home" type="button" data-toc-screen="home" onclick="tocGo('home')">⌂ ホームへ戻る <span style="margin-left:auto">›</span></button>
+
+    <div class="toc-group">
+      <div class="toc-group-title">研修理解度テスト</div>
+      <a class="toc-item toc-external" href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSey2Z9CB99wmp48HR-iDv6XKSxKeFztdyVZIn8owQV5VgBrWw/formResponse" target="_blank" rel="noopener noreferrer" onclick="closeToc()" style="text-decoration:none"><span>理解度テストを受ける</span><span class="toc-arrow">↗</span></a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-title">確認事項</div>
+      <div class="toc-list">
+        <button class="toc-item" data-toc-screen="banned" onclick="tocGo('banned')"><span>禁止文言</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="reportguide" onclick="tocGo('reportguide')"><span>開始報告・終了報告について</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="bannedpass" onclick="tocGo('bannedpass')"><span>禁止物件の通過報告について</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="postingcautions" onclick="tocGo('postingcautions')"><span>投函する際の注意点</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="areaaddress" onclick="tocGo('areaaddress')"><span>エリアと番地の把握</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="tightdistribution" onclick="tocGo('tightdistribution')"><span>詰め配布とは</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="targetproperties" onclick="tocGo('targetproperties')"><span>対象物件の例</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="dailyflow" onclick="tocGo('dailyflow')"><span>1日の流れ（出勤～退勤まで）</span><span class="toc-arrow">›</span></button>
+      </div>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-title">シフト提出</div>
+      <div class="toc-list">
+        <a class="toc-item toc-external" href="https://gs23-postinghld.posmg.com/staff_page/login" target="_blank" rel="noopener noreferrer" onclick="closeToc()" style="text-decoration:none"><span>提出先リンク</span><span class="toc-arrow">↗</span></a>
+        <button class="toc-item" data-toc-screen="shiftguide" onclick="tocGo('shiftguide')"><span>シフト確認、注意点</span><span class="toc-arrow">›</span></button>
+      </div>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-title">スキルを伸ばす</div>
+      <div class="toc-list">
+        <button class="toc-item" data-toc-screen="skillup" onclick="tocGo('skillup')"><span>スキルアップ項目</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item" data-toc-screen="rainDelivery" onclick="tocGo('rainDelivery')"><span>雨の日の配布方法</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item toc-sub" data-toc-screen="rainCarry" onclick="tocGo('rainCarry')"><span>雨の日の持ち運び方法</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item toc-sub" data-toc-screen="rainCoat" onclick="tocGo('rainCoat')"><span>カッパの場合</span><span class="toc-arrow">›</span></button>
+        <button class="toc-item toc-sub" data-toc-screen="rainUmbrella" onclick="tocGo('rainUmbrella')"><span>傘の場合</span><span class="toc-arrow">›</span></button>
+      </div>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-title">公式LINE</div>
+      <div class="toc-list">
+        <a class="toc-item toc-external" href="https://line.me/R/ti/p/%40930mzncm" target="_blank" rel="noopener noreferrer" onclick="closeToc()" style="text-decoration:none"><span>公式LINEを開く</span><span class="toc-arrow">↗</span></a>
+      </div>
+    </div>
+  </nav>
+  <div class="app">
+    <div class="header">
+      <img src="media_01.webp" alt="Posting Technologies Logo" class="header-logo">
+      <div class="header-content">
+        <h1>配布研修ポータル</h1>
+        <p>Training Support Portal</p>
+      </div>
+    </div>
+    
+    <div class="content">
+      
+      <div class="screen active" id="homeScreen">
+        <section class="portal-hero">
+          <div class="portal-eyebrow">研修者向け</div>
+          <h2 class="portal-title">研修で覚えたことを、現場で使える形にするポータル</h2>
+          <p class="portal-copy">基本ルールの確認から、配布スピードを上げる具体的な動作まで、このページからいつでも見返せます。研修中だけでなく、実際に配布するときの復習にも使ってください。</p>
+        </section>
+
+        <section class="portal-section">
+          <div class="portal-section-head">
+            <div>
+              <h3 class="portal-section-title">研修理解度テスト</h3>
+              <p class="portal-section-desc">研修内容をどれだけ理解できているか、実際の問題で確認します</p>
+            </div>
+          </div>
+          <div class="portal-grid">
+            <a href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSey2Z9CB99wmp48HR-iDv6XKSxKeFztdyVZIn8owQV5VgBrWw/formResponse" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
+              <div class="portal-card is-primary">
+                <div class="portal-card-icon">
+                  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="9" y="7" width="30" height="34" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M16 17H32M16 24H27M16 31H24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M30 30L33 33L39 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="portal-card-body">
+                  <p class="portal-card-title">理解度テストを受ける <span class="portal-badge">必須</span></p>
+                  <p class="portal-card-desc">研修で覚えたルールや判断基準を、テスト形式で確認します。</p>
+                </div>
+                <div class="portal-arrow">↗</div>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <section class="portal-section">
+          <div class="portal-section-head">
+            <div>
+              <h3 class="portal-section-title">確認事項</h3>
+              <p class="portal-section-desc">研修・配布前に必ず確認しておきたい内容</p>
+            </div>
+          </div>
+          <div class="portal-grid">
+            <div class="portal-card is-primary" onclick="goToScreen('banned')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="7" y="6" width="34" height="36" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 24L20 30L34 16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">禁止文言 <span class="portal-badge">基本</span></p>
+                <p class="portal-card-desc">投函を避けるべき文言を、4つのポイントで確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+            <div class="portal-card" onclick="goToScreen('reportguide')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <path d="M24 14V24L31 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M11 10L16 15M37 10L32 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">開始報告・終了報告について <span class="portal-badge">重要</span></p>
+                <p class="portal-card-desc">配布前後に必要な報告のタイミングと、忘れないための基本を確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+            <div class="portal-card" onclick="goToScreen('bannedpass')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 35V10M9 11H31L27 18L31 25H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M17 35H39" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M25 29L31 35L25 41" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">禁止物件の通過報告について <span class="portal-badge">重要</span></p>
+                <p class="portal-card-desc">禁止物件を通過した際に必要な報告方法と、共有するポイントを確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+            <div class="portal-card" onclick="goToScreen('postingcautions')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="8" y="14" width="32" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <path d="M13 21H35" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M24 8V28M18 22L24 28L30 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">投函する際の注意点 <span class="portal-badge">重要</span></p>
+                <p class="portal-card-desc">チラシを投函するときに必ず気をつけるポイントを確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+            <div class="portal-card" onclick="goToScreen('areaaddress')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M8 11L19 7L30 11L40 7V36L30 40L19 36L8 40Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M19 7V36M30 11V40" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="25" cy="22" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">エリアと番地の把握 <span class="portal-badge">基本</span></p>
+                <p class="portal-card-desc">配布エリアの範囲と番地の見方を理解し、現在地を把握しながら配布するための基本を確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+
+
+            <div class="portal-card" onclick="goToScreen('tightdistribution')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M10 11H38V37H10Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M16 17H32M16 24H32M16 31H26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M31 29L36 34L31 39" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">詰め配布とは <span class="portal-badge">基本</span></p>
+                <p class="portal-card-desc">番地を順番に配り切る考え方と、対象物件を間違えないための基本を確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+
+            <div class="portal-card" onclick="goToScreen('targetproperties')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 22L24 9l16 13v17a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3V22Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M18 42V29h12v13M7 22h34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">対象物件の例 <span class="portal-badge">基本</span></p>
+                <p class="portal-card-desc">戸建配布の場合に、配布対象となる物件を写真の例で確認します。</p>
+              </div>
+            </div>
+
+
+
+            <div class="portal-card" onclick="goToScreen('dailyflow')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M24 14V25L31 30" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8L10 12M34 8L38 12" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">1日の流れ（出勤～退勤まで） <span class="portal-badge">基本</span></p>
+                <p class="portal-card-desc">出勤から現場への移動、配布開始・切り上げまでの1日の基本的な流れを確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+</div>
+        </section>
+
+        <section class="portal-section">
+          <div class="portal-section-head">
+            <div>
+              <h3 class="portal-section-title">シフト提出</h3>
+              <p class="portal-section-desc">シフトの提出方法や確認事項をまとめる項目</p>
+            </div>
+          </div>
+          <div class="portal-grid">
+            <a class="portal-card" href="https://gs23-postinghld.posmg.com/staff_page/login" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M18 15H14C10.7 15 8 17.7 8 21V34C8 37.3 10.7 40 14 40H27C30.3 40 33 37.3 33 34V30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M25 8H40V23M39 9L21 27" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">提出先リンク</p>
+                <p class="portal-card-desc">シフト提出はこちらから開けます。<br><strong>ID：U○○○</strong><br><strong>パスワード：携帯番号下4桁</strong></p>
+              </div>
+              <div class="portal-arrow">↗</div>
+            </a>
+
+            <div class="portal-card" onclick="goToScreen('shiftguide')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="8" y="10" width="32" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                  <path d="M15 7V14M33 7V14M8 18H40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M16 26L21 31L32 21" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">シフト確認、注意点</p>
+                <p class="portal-card-desc">シフト確定の流れ、時間指定がある場合の注意点、連絡がない場合の確認方法をまとめています。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="portal-section">
+          <div class="portal-section-head">
+            <div>
+              <h3 class="portal-section-title">スキルを伸ばす</h3>
+              <p class="portal-section-desc">「なぜ遅いのか」「どこを直せば速くなるのか」を具体的に確認</p>
+            </div>
+          </div>
+          <div class="portal-grid">
+            <div class="portal-card is-primary" onclick="goToScreen('skillup')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M10 35L20 25L27 30L38 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 17H38V24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">スキルアップ項目 <span class="portal-badge">おすすめ</span></p>
+                <p class="portal-card-desc">配布スピードに大きなロスが出る動作と、具体的な改善方法を確認できます。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+            <div class="portal-card" onclick="goToScreen('rainDelivery')">
+              <div class="portal-card-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M15 31h19a7 7 0 0 0 .7-13.9A11 11 0 0 0 14 19.5 5.8 5.8 0 0 0 15 31Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 35l-2 4M26 35l-2 4M34 35l-2 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">雨の日の配布方法</p>
+                <p class="portal-card-desc">雨天時にチラシを濡らさず、安全に配布するためのポイントを確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+          </div>
+          <div class="portal-mini-note">配布が遅いと感じたときは、まず「スキルアップ項目」を見て、自分に当てはまる動きを探してください。小さな動作でも、何百件と繰り返すと大きな時間差になります。</div>
+        </section>
+
+        <section class="portal-section">
+          <div class="portal-section-head">
+            <div>
+              <h3 class="portal-section-title">公式LINE</h3>
+              <p class="portal-section-desc">公式LINEはこちらから開けます</p>
+            </div>
+          </div>
+          <div class="portal-grid">
+            <a class="portal-card is-primary" href="https://line.me/R/ti/p/%40930mzncm" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;">
+              <div class="portal-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M24 8C14.6 8 7 14.3 7 22.1c0 7 6 12.8 14.1 13.9.5.1 1.3.4 1.5.9.2.4.1 1.1.1 1.5l-.2 1.4c-.1.4-.3 1.6 1.5.9 1.8-.8 9.9-5.8 13.5-10 2.5-2.8 3.5-5.7 3.5-8.6C41 14.3 33.4 8 24 8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M15 25v-7m0 7h4m3 0v-7l5 7v-7m4 0h5m-5 3h4m-4 4h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">公式LINEを開く <span class="portal-badge">連絡</span></p>
+                <p class="portal-card-desc">タップすると公式LINEが開きます。</p>
+              </div>
+              <div class="portal-arrow">↗</div>
+            </a>
+          </div>
+        </section>
+
+
+      </div>
+      
+      
+
+
+      
+      <div class="screen" id="reportguideScreen">
+        <h2 class="section-title">開始報告・終了報告について</h2>
+
+        <div class="rg-hero">
+          <h3>ポスマネ・業務ポータル報告 ＋ LINE報告をセットで徹底</h3>
+          <p>開始・終了報告は、業務ポータル・ポスマネから送信して終わりではありません。送信後のLINE報告までを1セットとして行ってください。</p>
+          <div class="rg-alert">重要：報告を送信したら、LINEでも「送信しました」と必ず報告する</div>
+
+          <div class="rg-steps">
+            <div class="rg-step"><div class="rg-step-num">1</div><div><strong>業務ポータル・ポスマネから報告</strong><span>開始・終了それぞれの報告画面から送信</span></div></div>
+            <div class="rg-step"><div class="rg-step-num">2</div><div><strong>送信後すぐにLINEで報告</strong><span>「○○報告送信しました」とグループLINEへ残す</span></div></div>
+            <div class="rg-step"><div class="rg-step-num">3</div><div><strong>異常・GPS切れもその場で共有</strong><span>理由と再開地点・再開したことも報告する</span></div></div>
+          </div>
+        </div>
+
+        <section class="rg-section">
+          <div class="rg-section-head">
+            <div class="rg-section-no">1</div>
+            <div>
+              <h3>開始・終了報告後はLINEでも逐一報告</h3>
+              <p class="rg-section-sub">ポスマネ・業務ポータルで送信後、グループLINEへの報告までが1セットです。</p>
+            </div>
+          </div>
+          <ul class="rg-list">
+            <li>開始報告を送信したら、すぐにLINEで「○○区○○○丁目 開始報告送信しました」と送る。</li>
+            <li>終了報告を送信したら、すぐにLINEで「○○区○○○丁目 終了報告送信しました」と送る。</li>
+            <li>終了後に事務所へ戻る場合は「○○事務所戻ります」まで送る。</li>
+          </ul>
+
+          <div class="rg-example">
+            <div class="rg-example-label">開始報告のLINE例</div>
+            <div class="rg-example-body">豊島区上池袋4丁目　開始報告送信しました</div>
+          </div>
+          <div class="rg-example">
+            <div class="rg-example-label">終了報告のLINE例</div>
+            <div class="rg-example-body">中野区本町2　終了報告しました。<br>事務所戻ります</div>
+          </div>
+
+          <div class="rg-gallery two same-size">
+            <figure class="rg-photo"><img src="media_02.webp" alt="開始報告の実際のLINE例"><figcaption>実際の開始報告例</figcaption></figure>
+            <figure class="rg-photo"><img src="media_03.webp" alt="終了報告の実際のLINE例"><figcaption>実際の終了報告例</figcaption></figure>
+          </div>
+          <div class="portal-mini-note"><strong>ポイント：</strong>短い文章でOK。送信した事実が分かるように、その都度LINEへ残してください。</div>
+        </section>
+
+        <section class="rg-section">
+          <div class="rg-section-head">
+            <div class="rg-section-no">2</div>
+            <div>
+              <h3>開始・終了報告の「写真」欄にはラクバルのスクリーンショット</h3>
+              <p class="rg-section-sub">開始・終了報告に添付する画像は、ラクバルの稼働画面をスクリーンショットしてください。</p>
+            </div>
+          </div>
+
+          <div class="rg-checkbox">
+            <div class="rg-checkbox-title">添付するスクリーンショットで確認できる状態</div>
+            <ul>
+              <li>配布エリアが表示されていること</li>
+              <li>現在地・GPSの軌跡が確認できること</li>
+              <li>ラクバルの稼働画面であること</li>
+            </ul>
+          </div>
+
+          <div class="rg-gallery two same-size">
+            <figure class="rg-photo"><img src="media_04.webp" alt="開始直後のラクバル画面例"><figcaption>開始直後のラクバル画面例</figcaption></figure>
+            <figure class="rg-photo"><img src="media_05.webp" alt="稼働中・終了付近のラクバル画面例"><figcaption>稼働中・終了付近の画面例</figcaption></figure>
+          </div>
+          <div class="rg-alert">開始・終了報告を送る前に、添付画像がラクバルのスクショになっているか必ず確認。</div>
+        </section>
+
+        <section class="rg-section">
+          <div class="rg-section-head">
+            <div class="rg-section-no">3</div>
+            <div>
+              <h3>GPSが切れた・稼働し直した場合もLINEで報告</h3>
+              <p class="rg-section-sub">通常の開始・終了だけでなく、稼働状況に変化があった場合も内容を残してください。</p>
+            </div>
+          </div>
+
+          <figure class="rg-photo"><img src="media_06.webp" alt="GPS切れ・稼働再開をLINEで共有した実例"><figcaption>GPSが切れていたため、理由と再開したことをLINEで共有した例</figcaption></figure>
+          <div class="rg-gps-example"><strong>報告文の例：</strong><br>現場到着前に公園のお手洗いに寄った際、GPSが切れていたため、そこから稼働し直しました。</div>
+        </section>
+
+        <section class="rg-section rg-flow">
+          <h3>開始から終了までの流れ</h3>
+          <div class="rg-flow-row"><div class="rg-flow-n">1</div><div class="rg-flow-c"><strong>業務ポータル・ポスマネで開始報告</strong><span>開始報告の写真欄にラクバルのスクショを添付</span></div></div>
+          <div class="rg-flow-row"><div class="rg-flow-n">2</div><div class="rg-flow-c"><strong>LINEへ開始報告</strong><span>「○○区○○○丁目 開始報告送信しました」</span></div></div>
+          <div class="rg-flow-row"><div class="rg-flow-n">3</div><div class="rg-flow-c"><strong>稼働中</strong><span>GPS切れ・再開・トラブルがあれば、その都度LINEで共有</span></div></div>
+          <div class="rg-flow-row"><div class="rg-flow-n">4</div><div class="rg-flow-c"><strong>業務ポータル・ポスマネで終了報告</strong><span>終了報告の写真欄にラクバルのスクショを添付</span></div></div>
+          <div class="rg-flow-row"><div class="rg-flow-n">5</div><div class="rg-flow-c"><strong>LINEへ終了報告</strong><span>「○○区○○○丁目 終了報告送信しました」＋必要なら「事務所戻ります」</span></div></div>
+        </section>
+      </div>
+
+      
+      <div class="screen" id="bannedpassScreen">
+        <h2 class="section-title">禁止物件の通過報告について</h2>
+
+        <div class="bp-hero">
+          <div class="bp-kicker">CP物件 / 通過時のルール</div>
+          <h3>禁止物件の前を通るときは<br>「止まる → スクショ → LINE報告」</h3>
+          <p>配布中にCP・投函禁止物件の前を通過するタイミングがあります。誤投函していないことを内勤がリアルタイムで確認できるよう、通過時に必ず報告してください。</p>
+          <div class="bp-important">⚠️ 禁止物件は「入れなかった」だけで終わりではありません。<br>通過した事実まで報告して完了です。</div>
+        </div>
+
+        <section class="bp-step">
+          <div class="bp-step-head">
+            <div class="bp-n">1</div>
+            <div>
+              <h4>禁止物件の前で一度止まる</h4>
+              <p>配布ルート上でCP・投函禁止物件の前を通るタイミングになったら、一度立ち止まります。そのまま通り過ぎず、ラクバル上で対象物件を確認してください。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="bp-step">
+          <div class="bp-step-head">
+            <div class="bp-n">2</div>
+            <div>
+              <h4>ラクバルの禁止物件ピンをタップしてスクリーンショット</h4>
+              <p>対象のピンをタップし、<strong>物件名・住所と現在地が確認できる状態</strong>でスクリーンショットを撮ります。</p>
+            </div>
+          </div>
+          <figure class="bp-photo">
+            <img src="media_07.webp" alt="ラクバルで禁止物件のピンをタップした報告用スクリーンショット">
+            <figcaption>報告用スクリーンショット例：禁止物件のピンをタップした状態で撮影</figcaption>
+          </figure>
+        </section>
+
+        <section class="bp-step">
+          <div class="bp-step-head">
+            <div class="bp-n">3</div>
+            <div>
+              <h4>個人グループへ写真＋「通過しました」を送る</h4>
+              <p>撮ったスクリーンショットを、<strong>本人と内勤が入っている個人グループ</strong>へ貼り付けます。あわせて、住所または物件名が分かるように「通過しました」と一言報告してください。</p>
+            </div>
+          </div>
+          <div class="bp-example">
+            <strong>LINE報告例</strong>
+            <span>「赤塚1-14-9　マンション○○ 通過しました」</span>
+          </div>
+          <figure class="bp-photo">
+            <img src="media_08.webp" alt="LINE個人グループで禁止物件の通過を報告している例">
+            <figcaption>LINE報告例：スクリーンショットを貼り、物件を通過したことを文章でも共有</figcaption>
+          </figure>
+        </section>
+
+        <div class="bp-reason">
+          <h4>なぜ報告が必要？</h4>
+          <p>内勤ではラクバルをリアルタイムで確認しています。禁止物件付近を通っているのに報告がないと、<strong>「誤って投函してしまったのではないか」</strong>と確認が必要になります。<br><br>報告は内勤の確認のためだけでなく、<strong>「禁止物件には投函していない」と自分自身を守る記録</strong>にもなります。通過報告は必ず残してください。</p>
+        </div>
+
+        <div class="bp-summary">
+          <div class="bp-summary-row"><div class="bp-summary-check">1</div><div>禁止物件の前で一度止まる</div></div>
+          <div class="bp-summary-row"><div class="bp-summary-check">2</div><div>ラクバルで対象ピンをタップする</div></div>
+          <div class="bp-summary-row"><div class="bp-summary-check">3</div><div>物件・現在地が分かる状態でスクリーンショット</div></div>
+          <div class="bp-summary-row"><div class="bp-summary-check">4</div><div>個人グループに写真＋「通過しました」を送信</div></div>
+        </div>
+
+        <button class="back-button" onclick="goToScreen('home')">戻る</button>
+      </div>
+
+      
+      <div class="screen" id="postingcautionsScreen">
+        <h2 class="section-title">投函する際の注意点</h2>
+
+        <div class="pc-hero">
+          <div class="pc-kicker">01 / 投函前チェック</div>
+          <h3>投函する時の順番</h3>
+          <p>最初の確認を飛ばさず、必ずこの順番で確認してから投函します。</p>
+          <div class="pc-badge">超重要 <small>最初の30秒がいちばん大事</small></div>
+          <div class="pc-alert-top">ポスト数が多い物件ほど、間違えた後の確認・回収に時間がかかります。<br>「入れる前に確認」を徹底してください。</div>
+        </div>
+
+        <div class="pc-stack">
+          <article class="pc-card">
+            <div class="pc-card-head">
+              <div class="pc-num">1</div>
+              <div>
+                <h4>旗・マップを確認</h4>
+                <p>投函禁止物件か、投函可能な物件かを最初に確認します。<br><span class="pc-em">番地を回る前に、必ずマップ上に旗が立っていないか確認。</span><br>投函禁止物件はマップで必ず確認してください。</p>
+              </div>
+              <div class="pc-flag" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M14 41V7M15 8L36 13L15 19Z" fill="currentColor"/></svg></div>
+            </div>
+            <div class="pc-gallery">
+              <figure class="pc-shot"><img src="media_09.webp" alt="マップ上にピンが立っている例"><figcaption>ピンが立っている例</figcaption></figure>
+              <figure class="pc-shot"><img src="media_10.webp" alt="マップ上に禁止の旗が立っている例"><figcaption>禁止の旗が立っている例</figcaption></figure>
+            </div>
+          </article>
+
+          <article class="pc-card">
+            <div class="pc-card-head">
+              <div class="pc-num">2</div>
+              <div>
+                <h4>文言を確認</h4>
+                <p>金銭・回収・連絡・法的措置など、強い文言がないかを確認します。<br><span class="pc-em">「入れたらどうなるか分からない」と感じたら、投函せず、すぐ内勤に連絡して確認してください。</span></p>
+              </div>
+            </div>
+          </article>
+
+          <article class="pc-card">
+            <div class="pc-card-head">
+              <div class="pc-num orange">3</div>
+              <div>
+                <h4>個人ポストの張り紙を確認</h4>
+                <p>各ポストに個別のお断り・注意書きがないか確認します。<br>入れる前に、<span class="pc-em">個人ポストを一つずつ確認</span>してください。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="pc-card">
+            <div class="pc-card-head">
+              <div class="pc-num">4</div>
+              <div>
+                <h4>管理人・管理組合・予備ポストを確認</h4>
+                <p>管理人用・管理組合用・予備ポストがないか必ず確認し、誤って投函しないようにしてください。</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+
+        <section class="pc-banexamples" aria-labelledby="pcBanExamplesTitle">
+          <div class="pc-banexamples-head">
+            <span class="pc-banexamples-kicker">禁止物件のイメージ例</span>
+            <h3 id="pcBanExamplesTitle">現場では、こういう掲示・ステッカーがあれば投函しない</h3>
+            <p>禁止の意思表示は、<strong>マンション全体の共用ポストを対象にした掲示</strong>、<strong>戸建てポストのステッカー</strong>、<strong>各ポストごとの個別表示</strong>など、いろいろな形で出ています。<br>少しでも「投函禁止」「お断り」「不要」などの表示があれば、入れずに止まって確認してください。</p>
+          </div>
+
+          <div class="pc-ban-group">
+            <h4>① マンション全体のポストを対象にした掲示</h4>
+            <p class="pc-ban-group-note">共用ポストの近くの壁や掲示面に貼られているケースです。<strong>1つのポストだけではなく、建物全体の共用ポストが対象</strong>と考えてください。</p>
+            <div class="pc-ban-tags">
+              <span class="pc-ban-tag">管理組合・管理会社の掲示</span>
+              <span class="pc-ban-tag">共用ポスト横の張り紙</span>
+              <span class="pc-ban-tag">建物全体が対象</span>
+            </div>
+            <div class="pc-ban-grid cols-2" style="margin-top:12px;">
+              <figure class="pc-ban-shot"><img src="media_11.png" alt="マンション全体の共用ポストを対象にした掲示例 1"><figcaption>例1：共用ポスト横の大きな「チラシ投函禁止」掲示</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_12.png" alt="マンション全体の共用ポストを対象にした掲示例 2"><figcaption>例2：管理組合名が入った、建物全体向けの掲示</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_13.png" alt="マンション全体の共用ポストを対象にした掲示例 3"><figcaption>例3：回収・謝罪などの強い文言がある掲示</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_14.png" alt="マンション全体の共用ポストを対象にした掲示例 4"><figcaption>例4：共同ポスト全体への投函を一切お断りする掲示</figcaption></figure>
+            </div>
+          </div>
+
+          <div class="pc-ban-group">
+            <h4>② 戸建てポストのステッカー</h4>
+            <p class="pc-ban-group-note">戸建てのポストや門柱に直接貼られている小さな表示です。サイズが小さくても、<strong>表示があれば投函禁止</strong>です。</p>
+            <div class="pc-ban-grid">
+              <figure class="pc-ban-shot"><img src="media_15.png" alt="戸建てポストの投函お断りステッカーの例"><figcaption>戸建てのポストにある「チラシ投函お断り」ステッカーの例</figcaption></figure>
+            </div>
+          </div>
+
+          <div class="pc-ban-group">
+            <h4>③ 個別ポストごとの掲示</h4>
+            <p class="pc-ban-group-note">集合ポストのうち、<strong>特定の部屋のポストだけ</strong>にステッカーが貼られているケースです。建物全体の掲示がなくても、<strong>貼られているポストには入れません</strong>。</p>
+            <div class="pc-ban-grid">
+              <figure class="pc-ban-shot"><img src="media_16.png" alt="個別ポストごとの投函不要ステッカーの例"><figcaption>集合ポストの一部にだけ「チラシ不要」「投函不要」の表示がある例</figcaption></figure>
+            </div>
+          </div>
+
+          <div class="pc-ban-finalnote">迷ったら自己判断で入れず、<strong>一度止まって確認</strong>してください。<br>「小さいから見落としていい」はNGです。禁止表示がある物件・ポストには絶対に投函しません。</div>
+        </section>
+
+        <div class="pc-warning">
+          <h4>判断できない / 間違えて投函した</h4>
+          <p><strong>判断できない → 入れずに、すぐ内勤へ連絡して確認。</strong><br><strong>間違えて投函 → すぐにグループへ報告。</strong></p>
+        </div>
+      </div>
+
+      
+      <div class="screen" id="areaaddressScreen">
+        <h2 class="section-title">エリアと番地の把握</h2>
+
+        <div class="aa-hero">
+          <strong>まずこれだけ覚える</strong>
+          <p><b>エリア</b> ＝ 今日配る大きな範囲　／　<b>番地</b> ＝ その中を細かく分けた区切り</p>
+        </div>
+
+        <div class="aa-compare">
+          <article class="aa-card area">
+            <span class="aa-pill">エリア</span>
+            <h3>＝ 今日配る範囲</h3>
+            <p>マップの枠・色で指定される大きな範囲です。<br><b>この枠の中だけ配る</b>と覚えてください。</p>
+            <div class="aa-area-map" aria-label="エリアのイメージ図">
+              <div class="aa-area-label">この枠の中だけ配る</div>
+              <svg class="aa-area-outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,0 100,0 100,48 45,48 45,100 0,95"></polygon></svg>
+            </div>
+          </article>
+
+          <article class="aa-card address">
+            <span class="aa-pill">番地</span>
+            <h3>＝ エリア内の小さい区切り</h3>
+            <p>地図上の「5」「6」「16」などの数字が番地です。</p>
+            <div class="aa-address-grid" aria-label="番地のイメージ図">
+              <div class="aa-address-cell">5</div>
+              <div class="aa-address-cell current"><span>6</span></div>
+              <div class="aa-address-cell">7</div>
+              <div class="aa-address-cell">8</div>
+              <div class="aa-address-cell">9</div>
+              <div class="aa-address-cell">10</div>
+            </div>
+            <div class="aa-address-note">1つの番地に複数の家・建物がある</div>
+          </article>
+        </div>
+
+        <div class="aa-misunderstand">
+          <span class="label">よくある勘違い</span>
+          <strong>番地 ＝ 建物1軒の番号ではありません</strong>
+          <p>同じ番地の中に、家・マンション・店舗などが複数あることがあります。</p>
+        </div>
+
+        <section class="aa-checks">
+          <h3>配り始める前の3チェック</h3>
+          <div class="aa-check">
+            <div class="aa-check-num">1</div>
+            <div><strong>エリア全体の形を確認</strong><span>どこからどこまでが指定範囲かを見る。</span></div>
+          </div>
+          <div class="aa-check">
+            <div class="aa-check-num">2</div>
+            <div><strong>スタート番地を確認</strong><span>1番地とは限りません。指示書に記載されている番号を確認してください。</span></div>
+          </div>
+          <div class="aa-check">
+            <div class="aa-check-num">3</div>
+            <div><strong>マップを拡大して番地を確認</strong><span>数字を見ながら、番地を1つずつ進めます。</span></div>
+          </div>
+        </section>
+
+        <div class="aa-next">
+          <h3>次に覚えること</h3>
+          <strong>番地を1つずつ、一周して配り切る</strong>
+          <p>1番地 → 2番地 → 3番地… または 60 → 59 → 58…<br>この順番で進むのが「詰め配布」の基本です。</p>
+        </div>
+      </div>
+
+
+
+      
+      <div class="screen" id="tightdistributionScreen">
+        <h2 class="section-title">詰め配布とは</h2>
+
+        <div class="td-hero">
+          <div class="kicker">番地を1つずつ・一周して配り切る</div>
+          <h3>地図と現地をセットで見て、順番に配る</h3>
+          <p>地図を拡大して番地とエリアの形を確認し、特に「隣のエリア」と「一筆書きで進められる形」を先に見ておきます。</p>
+        </div>
+
+        <section class="td-section">
+          <div class="td-section-head"><div class="td-num">1</div><h3>隣り合わせのエリアに注意</h3></div>
+          <p>境界付近は、隣エリアの番地を拾いやすい場所です。次の番地を先に確認してから境界付近を進みます。</p>
+          <div class="td-grid">
+            <article class="td-card blue">
+              <img src="media_17.webp" alt="隣り合わせのエリアを確認する地図例">
+              <div class="td-card-body"><strong>境界を先に確認</strong><span>隣のエリアに入らないよう、次の番地を見てから進む。</span></div>
+            </article>
+            <article class="td-card orange">
+              <img src="media_18.webp" alt="番地を一筆書きで進む地図例">
+              <div class="td-card-body"><strong>つながる番地は一筆書き</strong><span>行ったり来たりせず、番地の形を見てなるべく戻らず一周する。</span></div>
+            </article>
+          </div>
+
+          <div class="td-rule">
+            <strong>原則は番地順。必要な場合のみ前後5番地程度の調整OK</strong>
+            <p>道路・地形などで必要な場合のみ、一筆書きのイメージで前後の番地を入れ替えて進めてもOKです。<b>大きく番地を飛ばすのはNG。</b></p>
+          </div>
+
+          <div class="td-danger">
+            <strong>今どの番地か分からない → 口頭で確認</strong>
+            <p>気づかないまま進めるのが一番危険です。迷った時は一度止めて、現在地と番地を確認してから再開します。順番を守ることで、配布漏れ・重複・引き継ぎミスを防ぎます。</p>
+          </div>
+        </section>
+
+
+      </div>
+
+
+
+      
+      <div class="screen" id="targetpropertiesScreen">
+        <h2 class="section-title">対象物件の例</h2>
+
+        <div class="tp-hero">
+          <div class="kicker">対象を間違えない</div>
+          <h3>戸建配布の場合は、戸建てのみが配布対象</h3>
+          <p>戸建配布の案件では、戸建て（一軒家）のみが配布対象です。集合住宅には投函しないよう、写真の例で見分け方を確認します。</p>
+        </div>
+
+        <div class="tp-grid">
+          <article class="tp-card ok">
+            <div class="tp-label">○ 配布対象</div>
+            <div class="tp-photo"><img src="media_19.webp" alt="戸建ての例"></div>
+            <div class="tp-copy"><strong>戸建て</strong><span>一軒家</span></div>
+          </article>
+
+          <article class="tp-card ng">
+            <div class="tp-label">× 配布不可</div>
+            <div class="tp-photo"><img src="media_20.webp" alt="集合住宅の例"></div>
+            <div class="tp-copy"><strong>集合住宅</strong><span>配布不可</span></div>
+          </article>
+        </div>
+
+        <div class="tp-note">戸建配布の場合：戸建て＝配布対象 ／ 集合住宅＝配布不可</div>
+      </div>
+
+
+
+      
+      <div class="screen" id="dailyflowScreen">
+        <h2 class="section-title">1日の流れ（出勤～退勤まで）</h2>
+
+        <div class="df-hero">
+          <div class="kicker">DAILY FLOW</div>
+          <h3>出勤 → エリアへ移動 → 配布</h3>
+          <p>フルタイム・時間指定なしの場合の目安です。まずは1日の基本的な流れを把握して、出発前の確認を忘れないようにしてください。</p>
+        </div>
+
+        <div class="df-timeline">
+          <div class="df-step">
+            <div class="df-time">10:00<br>〜10:30頃</div>
+            <div><h4>事務所へ出勤・チェックシートを実施</h4><p>出勤後はまずチェックシートを行います。出発前にやるべきこと・確認事項はチェックシート内に記載されているため、内容に沿って準備を進めます。</p></div>
+          </div>
+          <div class="df-step">
+            <div class="df-time">移動<br>20〜30分</div>
+            <div><h4>自転車で配布エリアへ移動</h4><p>事務所から、自転車で20〜30分程度のエリアへ向かいます。</p></div>
+          </div>
+          <div class="df-step">
+            <div class="df-time">11:00頃〜</div>
+            <div><h4>配布開始の目安</h4><p>現場到着後、当日の指示・エリアを確認して配布を開始します。</p></div>
+          </div>
+          <div class="df-step">
+            <div class="df-time">〜20:00頃</div>
+            <div>
+              <h4>帰社時にやること</h4>
+              <p>20:00頃までを目安に配布を切り上げ、事務所へ戻ってから以下を順番に確認して退勤します。</p>
+              <div class="df-end-actions">
+                <div class="df-end-action"><b>1</b><span><strong>事務所へ戻して返却</strong><br>自転車 ／ 自転車の鍵 ／ モバイルバッテリー ／ 残りチラシ ／ ショルダーバッグ<br><span style="color:#e58a15;font-weight:900">モバイルバッテリー：貸出がある場合は必ず返却</span></span></div>
+                <div class="df-end-action"><b>2</b><span><strong>残りチラシをダブルチェック</strong><br>残部が出たら必ず社員へ確認。社員がいなければ電話で確認。研修担当だけで判断しない。</span></div>
+                <div class="df-end-action"><b>3</b><span><strong>らくばるを正しく終了</strong><br>事務所へ戻ってから終了。日付とフルネームを入力する。<br><span style="color:#173f60;font-weight:900">例：2026年1月1日 ポスティング太郎</span></span></div>
+                <div class="df-end-action"><b>4</b><span><strong>帰社後チェックシート</strong><br>帰社後チェックを記入。抜けがないか最後に確認。</span></div>
+              </div>
+              <div class="df-end-note">配布終了＝その場で終わりではありません。返却・残部確認・らくばる終了・帰社後チェックまで完了して1日の業務終了です。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="df-panel">
+          <h4>事務所</h4>
+          <div class="df-offices">
+            <div class="df-office"><strong>1　滝野川事務所</strong><span>東京都北区滝野川7-40-7</span></div>
+            <div class="df-office"><strong>2　志村坂上 倉庫兼事務所</strong><span>東京都板橋区志村1-17-9</span></div>
+            <div class="df-office"><strong>3　中野事務所</strong><span>東京都中野区東中野4-27-34 マグノリア1F</span></div>
+            <div class="df-office"><strong>4　足立事務所</strong><span>〒121-0836 東京都足立区入谷2丁目2-3</span></div>
+          </div>
+        </div>
+
+        <div class="df-panel">
+          <h4>出発前に必ず確認</h4>
+          <div class="df-checks">
+            <div class="df-check"><b>✓</b><span>配布指示書 ／ スタート番地 ／ 昇り・降り</span></div>
+            <div class="df-check"><b>✓</b><span>指定エリア ／ 投函禁止物件 ／ 旗</span></div>
+            <div class="df-check"><b>✓</b><span>持ち出しチラシ枚数</span></div>
+            <div class="df-check"><b>✓</b><span>自転車 ／ 鍵 ／ 必要備品</span></div>
+          </div>
+          <div class="df-rule">迷った場合は、自己判断せず当日の会社指示・就業ルールを確認してください。</div>
+        </div>
+
+        <div class="df-final">
+          <div class="kicker">LAST MESSAGE</div>
+          <h4>真面目に・誠実に配布を続けることが何より大切</h4>
+          <p>丁寧な配布を積み重ねることで、任せられる枚数やエリアも少しずつ増えていきます。分からないことや困ったことは内勤とすぐ共有し、しっかり連携を取りながら、より良い配布・より良い組織をつくっていきましょう。</p>
+        </div>
+      </div>
+
+      
+
+      <div class="screen" id="shiftguideScreen">
+        <div class="sg-hero">
+          <div class="kicker">SHIFT GUIDE</div>
+          <h3>シフト確認、注意点</h3>
+          <p>希望を出しただけでは出勤確定ではありません。翌日の案内とグループ招待を確認して、確定状況を判断してください。</p>
+        </div>
+
+        <div class="sg-warning">
+          <h4>⚠️ 時間指定がある日のシフトについて</h4>
+          <p><strong>原則、フルタイムの稼働を優先します。</strong><br>配布員が使用する自転車の台数には限りがあり、フルタイムの方が配布できる枚数も多いため、同日の希望が重なった場合は、時間指定の方のシフトを外す場合があります。</p>
+        </div>
+
+        <div class="sg-box">
+          <h4>シフト希望日を出したあと、連絡が来ない場合</h4>
+          <div class="sg-step">
+            <div class="sg-n">1</div>
+            <div>
+              <strong>20:00を過ぎても連絡がない</strong>
+              <p>自分から確認してください。</p>
+              <div class="sg-callout">「明日、希望を出しているのですが、出勤できますか？」</div>
+            </div>
+          </div>
+          <div class="sg-step">
+            <div class="sg-n">2</div>
+            <div>
+              <strong>確認しても返信がない</strong>
+              <p><strong>その希望日の稼働はなし</strong>となります。希望を提出しているだけでは出勤確定ではありません。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sg-box sg-ok">
+          <h4>シフトが確定した場合</h4>
+          <div class="sg-step">
+            <div class="sg-n">1</div>
+            <div>
+              <strong>15:00までに翌日稼働グループへ招待</strong>
+              <p>翌日稼働するメンバー用のグループに招待されます。</p>
+            </div>
+          </div>
+          <div class="sg-step">
+            <div class="sg-n">2</div>
+            <div>
+              <strong>集合場所・集合時間の案内を確認</strong>
+              <p>次の日の集合場所と集合時間が、<strong>個人名のグループ</strong>に送られます。</p>
+            </div>
+          </div>
+          <div class="sg-callout">この2つを確認できたら、翌日の稼働が確定している状態です。</div>
+        </div>
+      </div>
+
+      <div class="screen" id="bannedScreen">
+        <h2 class="section-title">禁止文言</h2>
+
+        <div class="banned-intro">
+          <h3 class="banned-intro-title">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6L43 39H5L24 6Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 17V28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="34" r="1.8" fill="currentColor"/></svg>
+            この4種類の文言があれば投函しない
+          </h3>
+          <p>集合住宅などの禁止表示は、言い回しを丸暗記するのではなく「何を求めている文言なのか」で判断します。下の4つのどれかに当てはまる場合は、投函対象から除外してください。</p>
+        </div>
+
+        <div class="banned-axis">
+          禁止文言は、まずこの4つで見ます。
+          <span class="axis-words"><span>金銭</span><span>お客様</span><span>工数</span><span>法的</span></span>
+          <br><strong>どれか1つでも当てはまれば投函しない。</strong>
+        </div>
+
+        <div class="banned-grid">
+          <article class="banned-card">
+            <div class="banned-icon">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M17 15L24 24L31 15M24 24V35M18 27H30M18 32H30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="banned-number">POINT 01</span>
+              <h3>金銭的な負担を求める文言</h3>
+              <p>投函した場合に、配布側へ金銭的な負担が発生することを示す文言。</p>
+              <div class="banned-example"><strong>例：</strong>「着払いで返送します」「罰金を請求します」など</div>
+            </div>
+          </article>
+
+          <article class="banned-card">
+            <div class="banned-icon">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="18" cy="17" r="6" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="32" cy="19" r="5" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M8 37C9 29 13 26 18 26C23 26 27 29 28 37M27 29C29 27 31 26 34 26C38 26 41 29 42 35" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <span class="banned-number">POINT 02</span>
+              <h3>お客様に関する文言</h3>
+              <p>広告の配布元・広告主・クライアントなど、弊社のお客様への連絡や対応につながる文言。</p>
+              <div class="banned-example"><strong>例：</strong>「広告主へ連絡します」「配布元へ苦情を入れます」など</div>
+            </div>
+          </article>
+
+          <article class="banned-card">
+            <div class="banned-icon">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 30L18 22L24 28L37 15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 15H37V22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 39H38" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <span class="banned-number">POINT 03</span>
+              <h3>回収・謝罪など対応工数が発生する文言</h3>
+              <p>投函後に、回収・訪問・謝罪などの対応を求められる文言。</p>
+              <div class="banned-example"><strong>例：</strong>「チラシを回収しに来てください」「謝罪に来てください」など</div>
+            </div>
+          </article>
+
+          <article class="banned-card">
+            <div class="banned-icon">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8V36M14 14H34M14 14L8 26H20L14 14ZM34 14L28 26H40L34 14Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 26C10 30 13 32 17 32C20 32 22 30 23 26M29 26C30 30 33 32 37 32C40 32 42 30 43 26M16 40H32" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <span class="banned-number">POINT 04</span>
+              <h3>法的措置に関する文言</h3>
+              <p>投函した場合に、法的な対応を取ることを示している文言。</p>
+              <div class="banned-example"><strong>例：</strong>「法的措置を取ります」など</div>
+            </div>
+          </article>
+
+
+        <section class="pc-banexamples" aria-labelledby="bannedVisualExamplesTitle">
+          <div class="pc-banexamples-head">
+            <span class="pc-banexamples-kicker">禁止文言のイメージ例</span>
+            <h3 id="bannedVisualExamplesTitle">実際には、こういう書き方があれば投函しない</h3>
+            <p>下の写真は、4つの禁止文言の考え方に当てはまる実例です。<strong>1枚の掲示の中に複数の禁止文言が同時に入っていることもあります。</strong>文言を丸暗記するのではなく、どの考え方に当てはまるかで判断してください。</p>
+          </div>
+
+          <div class="pc-ban-group">
+            <h4>①〜④の判断につながる実例</h4>
+            <p class="pc-ban-group-note">集合住宅の掲示では、<strong>金銭・お客様・工数・法的</strong>のうち、どれか1つでも読み取れたら投函しません。</p>
+            <div class="pc-ban-tags">
+              <span class="pc-ban-tag">金銭的な負担</span>
+              <span class="pc-ban-tag">お客様に関する文言</span>
+              <span class="pc-ban-tag">回収・謝罪などの対応工数</span>
+              <span class="pc-ban-tag">法的措置</span>
+            </div>
+            <div class="pc-ban-grid cols-2" style="margin-top:12px;">
+              <figure class="pc-ban-shot"><img src="media_11.png" alt="着払い・罰金・警察通報・法的措置などの文言が入った掲示の例"><figcaption><strong>例1：</strong>「着払い」「罰金」「警察への通報」「法的措置」などが書かれている例。<br>→ <strong>POINT 01（金銭）</strong> と <strong>POINT 04（法的）</strong> に該当。</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_12.png" alt="広告配布元やクライアントへの注意が書かれた掲示の例"><figcaption><strong>例2：</strong>「広告配布元・クライアントの方は〜」と、配布元側への対応が書かれている例。<br>→ <strong>POINT 02（お客様）</strong> に該当。</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_13.png" alt="チラシの回収や謝罪を求める掲示の例"><figcaption><strong>例3：</strong>「すべてのチラシを回収しに来てください」「謝罪をしていただく場合もあります」などの例。<br>→ <strong>POINT 03（工数）</strong> に該当。</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_14.png" alt="費用請求や法的措置が書かれた掲示の例"><figcaption><strong>例4：</strong>「費用をご請求」「軽犯罪法」「建造物侵入等」「法的措置」などが書かれている例。<br>→ <strong>POINT 01（金銭）</strong> と <strong>POINT 04（法的）</strong> に該当。</figcaption></figure>
+            </div>
+          </div>
+
+          <div class="pc-ban-group">
+            <h4>個人宅・個別ポストの実例</h4>
+            <p class="pc-ban-group-note">個人宅や個別ポストでは、ここまで強い文言でなくても、<strong>「チラシ不要」「投函お断り」などの意思表示がある時点で投函しません。</strong></p>
+            <div class="pc-ban-tags">
+              <span class="pc-ban-tag">個人宅は広く除外</span>
+              <span class="pc-ban-tag">個別ポストの表示も対象</span>
+              <span class="pc-ban-tag">不要・お断りで止まる</span>
+            </div>
+            <div class="pc-ban-grid cols-2" style="margin-top:12px;">
+              <figure class="pc-ban-shot"><img src="media_15.png" alt="戸建てポストにチラシ投函お断りステッカーが貼られている例"><figcaption><strong>個人宅の例：</strong> 戸建てポストに「チラシ投函お断り」と表示がある例。<br>→ 個人宅なので、この時点で投函しません。</figcaption></figure>
+              <figure class="pc-ban-shot"><img src="media_16.png" alt="集合ポストの一つにチラシ不要ステッカーが貼られている例"><figcaption><strong>個別ポストの例：</strong> 集合ポストの一部にだけ「チラシ不要」と表示がある例。<br>→ そのポストには投函しません。</figcaption></figure>
+            </div>
+          </div>
+
+          <div class="pc-ban-finalnote">文言が1つでも当てはまれば投函しません。<br><strong>迷ったら入れずに止まって確認</strong>、これが基本です。</div>
+        </section>
+      </div>
+
+      
+      </div>
+
+      <div class="screen" id="reportScreen">
+        <h2 class="section-title">回答情報</h2>
+        <div class="section-card">
+          <div class="form-grid">
+            <div class="field">
+              <label for="trainee">配布員名</label>
+              <input id="trainee" type="text" placeholder="山田 太郎">
+            </div>
+            <div class="field">
+              <label for="trainer">研修員名</label>
+              <input id="trainer" type="text" placeholder="佐藤 健一">
+            </div>
+            <div class="field">
+              <label for="date">確認日</label>
+              <input id="date" type="date">
+            </div>
+            <div class="field">
+              <label>今回の配布</label>
+              <div class="choices" id="deliveryType"></div>
+            </div>
+          </div>
+          
+          <div class="form-grid">
+            <div class="textarea-field">
+              <label for="issue">今回の課題</label>
+              <textarea id="issue" placeholder="地図を見る回数が少なかった"></textarea>
+            </div>
+            <div class="textarea-field">
+              <label for="taught">今回伝えたこと</label>
+              <textarea id="taught" placeholder="番地に入る前に禁止ピンを確認するよう伝えた"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="screen" id="rainDeliveryScreen">
+        <h2 class="section-title">雨の日の配布方法</h2>
+        <div class="section-card">
+          <h3 style="margin:0 0 8px;font-size:18px;font-weight:900;">配布方法を選択</h3>
+          <p style="margin:0 0 16px;color:var(--text-secondary);font-size:13px;line-height:1.8;">当日の装備に合わせて、確認したい項目を選択してください。</p>
+          <div class="portal-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+            <div class="portal-card" onclick="goToScreen('rainCarry')" style="grid-column:1 / -1;">
+              <div class="portal-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M14 17h20l3 23H11l3-23Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M18 17v-3a6 6 0 0 1 12 0v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17 26h14M17 32h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">雨の日の持ち運び方法</p>
+                <p class="portal-card-desc">チラシや備品を濡らさずに持ち運ぶ方法を確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+            <div class="portal-card" onclick="goToScreen('rainCoat')">
+              <div class="portal-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M18 12l6-4 6 4 7 7-5 5-3-4v18H19V20l-3 4-5-5 7-7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">カッパの場合</p>
+                <p class="portal-card-desc">カッパを着用して配布する場合の動き方を動画で確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+            <div class="portal-card" onclick="goToScreen('rainUmbrella')">
+              <div class="portal-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M8 24c2-8 8-13 16-13s14 5 16 13H8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 24v12c0 3-2 5-5 5-2 0-4-1-5-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="portal-card-body">
+                <p class="portal-card-title">傘の場合</p>
+                <p class="portal-card-desc">傘を使用して配布する場合の動き方を動画で確認します。</p>
+              </div>
+              <div class="portal-arrow">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      
+      <div class="screen" id="rainCarryScreen">
+        <h2 class="section-title">雨の日の持ち運び方法</h2>
+        <div class="section-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:#eef7ff;color:#1976a8;display:grid;place-items:center;font-size:20px;">☔</div>
+            <div>
+              <h3 style="margin:0 0 2px;font-size:17px;font-weight:900;">持ち運び方法</h3>
+              <p style="margin:0;color:var(--text-secondary);font-size:12px;">雨天時にチラシや備品を濡らさないための持ち運び方法をここで確認します。</p>
+            </div>
+          </div>
+          <div style="border-radius:16px;background:#0f172a;overflow:hidden;box-shadow:var(--shadow-sm);">
+            <video controls playsinline preload="metadata" style="display:block;width:100%;height:auto;max-height:72vh;background:#000;">
+              <source src="videos/rain-carry.mp4" type="video/mp4">
+              お使いのブラウザでは動画を再生できません。
+            </video>
+          </div>
+          <p style="margin:10px 2px 0;color:var(--text-secondary);font-size:12px;line-height:1.7;">雨天時の持ち運び方法を、動画で確認してください。</p>
+        </div>
+      </div>
+
+      
+      <div class="screen" id="rainCoatScreen">
+        <h2 class="section-title">カッパの場合</h2>
+        <div class="section-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:#eef7ff;color:#1976a8;display:grid;place-items:center;font-size:20px;">🎥</div>
+            <div>
+              <h3 style="margin:0 0 2px;font-size:17px;font-weight:900;">配布方法の動画</h3>
+              <p style="margin:0;color:var(--text-secondary);font-size:12px;">カッパ着用時の実演動画です。</p>
+            </div>
+          </div>
+          <div style="border-radius:16px;background:#0f172a;overflow:hidden;box-shadow:var(--shadow-sm);">
+            <video controls playsinline preload="metadata" style="display:block;width:100%;height:auto;max-height:72vh;background:#000;">
+              <source src="videos/rain-coat.mp4" type="video/mp4">
+              お使いのブラウザでは動画を再生できません。
+            </video>
+          </div>
+          <p style="margin:10px 2px 0;color:var(--text-secondary);font-size:12px;line-height:1.7;">カッパ着用時の配布方法を、動画で確認してください。</p>
+        </div>
+      </div>
+
+      
+      <div class="screen" id="rainUmbrellaScreen">
+        <h2 class="section-title">傘の場合</h2>
+        <div class="section-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:#eef7ff;color:#1976a8;display:grid;place-items:center;font-size:20px;">🎥</div>
+            <div>
+              <h3 style="margin:0 0 2px;font-size:17px;font-weight:900;">配布方法の動画</h3>
+              <p style="margin:0;color:var(--text-secondary);font-size:12px;">傘使用時の実演動画です。</p>
+            </div>
+          </div>
+          <div style="border-radius:16px;background:#0f172a;overflow:hidden;box-shadow:var(--shadow-sm);">
+            <video controls playsinline preload="metadata" style="display:block;width:100%;height:auto;max-height:72vh;background:#000;">
+              <source src="videos/rain-umbrella.mp4" type="video/mp4">
+              お使いのブラウザでは動画を再生できません。
+            </video>
+          </div>
+          <p style="margin:10px 2px 0;color:var(--text-secondary);font-size:12px;line-height:1.7;">傘使用時の配布方法を、動画で確認してください。</p>
+        </div>
+      </div>
+
+      
+      <div class="screen" id="skillupScreen">
+        <h2 class="section-title">スキルアップ項目</h2>
+
+        <div class="skill-lead">
+          <h3 class="skill-lead-title">配布スピードが伸びない原因を見つける</h3>
+          <p class="skill-lead-text">配布が遅いときは、歩く速さよりも「1件ごとに止まる」「次を探してから動く」「チラシ準備が後手になる」といった小さなロスが積み重なっているケースがあります。下の項目を見ながら、まずロス度が大きいものから改善してください。</p>
+        </div>
+
+        <div class="skill-priority">
+          <strong>最優先で見るポイント</strong>
+          <p>①ポスト前で毎回チラシを準備する　②1件終わってから次のポストを探す　③同じ道を何度も往復する　④地図確認のたびに完全停止する。ここが残っていると、細かい技術改善より先に大きな時間ロスが発生します。</p>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">投函動作</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">ポストに近い側の手で投函する</h4>
+              <span class="loss-badge loss-low">ロス 小</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">右側にあるポストへ左手を伸ばすなど、ポストから遠い側の手で投函していないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">基本はポストに近い側の手を使い、体を大きくひねらず自然な姿勢で投函する。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">体をひねる・一歩余計に寄る・投函後に姿勢を戻す動作が毎件発生する。</div></div>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">投函後、そのまま次の進行方向へ抜ける</h4>
+              <span class="loss-badge loss-medium">ロス 中</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">投函後にその場で立ち止まったり、反対方向へ体を向け直したりしていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">次の物件の方向を意識した体勢で投函し、入れ終わったらそのまま次へ移動する。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">1件ごとの方向転換や立て直しは小さくても、数百件で大きな差になる。</div></div>
+          </div>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">チラシ準備</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">ポスト前に着く前からチラシを準備する</h4>
+              <span class="loss-badge loss-high">ロス 大</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">戸建住宅のポスト前で立ち止まってから、チラシを揃えたり持ち替えたりしていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">次のポストへ近づく移動中に、すぐ投函できる状態までチラシを準備しておく。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">毎件2〜3秒止まるだけでも、数百件ではかなりの時間ロスになる。</div></div>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">数件分を手元に持って連続投函する</h4>
+              <span class="loss-badge loss-medium">ロス 中</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">1件ごとにバッグや自転車のカゴからチラシを取り出していないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">無理のない範囲で数件分を手元に持ち、次々に投函できる状態を作る。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">「取り出す→揃える→持ち直す」という動作回数を大幅に減らせる。</div></div>
+          </div>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">視線・ポスト発見</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">1件を入れながら次のポストを見る</h4>
+              <span class="loss-badge loss-high">ロス 大</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">1件の投函が完全に終わってから、顔を上げて次のポストを探していないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">投函動作中や物件間の移動中から、次の建物・門・塀・ポスト位置へ視線を送る。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">「投函→停止→探す→移動」の停止時間を減らし、動きを連続させられる。</div></div>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">家の前に着く前にポスト位置を予測する</h4>
+              <span class="loss-badge loss-medium">ロス 中</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">敷地前まで来てから、左右を見回してポストを探し始めていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">近づく段階で門柱・塀・玄関・インターホン周辺を見て、ポスト位置を予測する。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">敷地前での探索、行き過ぎ、戻りを減らせる。</div></div>
+          </div>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">移動・動線</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">ポスト前で毎回完全停止しない</h4>
+              <span class="loss-badge loss-high">ロス 大</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">ポストの正面まで行って完全に止まり、そこから確認・準備・投函を始めていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">手前から位置確認と準備を済ませ、必要な分だけ減速して投函し、すぐ次へ動く。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">停止と再加速を毎件繰り返すと、配布全体のテンポが大きく落ちる。</div></div>
+          </div>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">同じ道・同じ物件へ戻る回数を減らす</h4>
+              <span class="loss-badge loss-high">ロス 大</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">飛ばしや順路ミスで、一度通った道へ何度も戻っていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">番地と進行方向を確認し、一度通る場所はできるだけその場で完了させる。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">投函枚数は増えないまま移動距離だけが増えるため、非常に大きなロスになる。</div></div>
+          </div>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">地図・ルート</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">地図確認で何度も完全停止しない</h4>
+              <span class="loss-badge loss-high">ロス 大</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">数件ごとに立ち止まり、現在地や次の道を最初から確認し直していないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">曲がり角・番地の切り替わりなど「地図を見る場所」を決め、直線区間は配布に集中する。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">地図を見るたびに配布の流れが完全に切れる。確認回数が多いほど影響が大きい。</div></div>
+          </div>
+        </div>
+
+        <div class="section-card skill-category">
+          <h3 class="skill-category-title">集合住宅</h3>
+
+          <div class="skill-card">
+            <div class="skill-card-head">
+              <h4 class="skill-card-title">建物に入る前からメールコーナーの位置を予測する</h4>
+              <span class="loss-badge loss-medium">ロス 中</span>
+            </div>
+            <div class="skill-row"><div class="skill-label">見るところ</div><div class="skill-text">建物に入ってから毎回メールコーナーを探し回っていないか。</div></div>
+            <div class="skill-row"><div class="skill-label">改善</div><div class="skill-text">入口・オートロック・管理人室・建物構造を見て、集合ポストの位置を予測して動く。</div></div>
+            <div class="skill-row"><div class="skill-label">なぜロス？</div><div class="skill-text">集合住宅は1棟あたりの探索時間が大きくなりやすく、積み重なると数分単位の差になる。</div></div>
+          </div>
+        </div>
+      </div>
+</div>
+    
+    <div class="footer" id="footer">
+      <button class="btn btn-back" id="backBtn" style="display: none;" onclick="goHome()">戻る</button>
+      <button class="btn btn-primary" id="submitBtn" style="display: none;">記録を提出</button>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    const FORM_DATA_KEY = 'trainingFormData';
+    
+    function init() {
+      const formSaved = localStorage.getItem(FORM_DATA_KEY);
+      if (formSaved) {
+        const data = JSON.parse(formSaved);
+        document.getElementById('trainee').value = data.trainee || '';
+        document.getElementById('trainer').value = data.trainer || '';
+        document.getElementById('date').value = data.date || new Date().toISOString().split('T')[0];
+        document.getElementById('issue').value = data.issue || '';
+        document.getElementById('taught').value = data.taught || '';
+      } else {
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+      }
+      
+      renderDeliveryChoices();
+      setupEventListeners();
+    }
+    
+    function renderDeliveryChoices() {
+      const container = document.getElementById('deliveryType');
+      container.innerHTML = `
+        <button class="choice" data-delivery="単配">単配</button>
+        <button class="choice" data-delivery="併配">併配</button>
+      `;
+      
+      document.querySelectorAll('[data-delivery]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-delivery]').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          saveFormData();
+        });
+      });
+    }
+    
+    function setupEventListeners() {
+      ['trainee', 'trainer', 'date', 'issue', 'taught'].forEach(id => {
+        document.getElementById(id).addEventListener('change', saveFormData);
+      });
+      
+      document.getElementById('submitBtn').addEventListener('click', submitForm);
+      document.getElementById('tocMenuBtn').addEventListener('click', () => {
+        document.getElementById('tocDrawer').classList.contains('is-open') ? closeToc() : openToc();
+      });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeToc(); });
+    }
+    
+
+
+    function openToc() {
+      document.getElementById('tocDrawer').classList.add('is-open');
+      document.getElementById('tocOverlay').classList.add('is-open');
+      document.getElementById('tocMenuBtn').classList.add('is-open');
+      document.getElementById('tocMenuBtn').setAttribute('aria-expanded','true');
+      document.getElementById('tocMenuBtn').setAttribute('aria-label','目次を閉じる');
+      document.body.classList.add('toc-lock');
+    }
+
+    function closeToc() {
+      document.getElementById('tocDrawer').classList.remove('is-open');
+      document.getElementById('tocOverlay').classList.remove('is-open');
+      document.getElementById('tocMenuBtn').classList.remove('is-open');
+      document.getElementById('tocMenuBtn').setAttribute('aria-expanded','false');
+      document.getElementById('tocMenuBtn').setAttribute('aria-label','目次を開く');
+      document.body.classList.remove('toc-lock');
+    }
+
+    function tocGo(screenName) {
+      closeToc();
+      if (screenName === 'home') goHome();
+      else goToScreen(screenName);
+      updateTocActive(screenName);
+    }
+
+    function updateTocActive(screenName) {
+      document.querySelectorAll('[data-toc-screen]').forEach(el => {
+        el.classList.toggle('active', el.dataset.tocScreen === screenName);
+      });
+    }
+
+    function goToScreen(screenName) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenName + 'Screen').classList.add('active');
+      updateTocActive(screenName);
+      
+      if (screenName === 'home') {
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'none';
+      } else if (screenName === 'report') {
+        document.getElementById('backBtn').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'block';
+      } else {
+        document.getElementById('backBtn').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'none';
+      }
+      
+      window.scrollTo(0, 0);
+    }
+    
+    function goHome() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('homeScreen').classList.add('active');
+      updateTocActive('home');
+      document.getElementById('backBtn').style.display = 'none';
+      document.getElementById('submitBtn').style.display = 'none';
+      window.scrollTo(0, 0);
+    }
+    
+    function saveFormData() {
+      const data = {
+        trainee: document.getElementById('trainee').value,
+        trainer: document.getElementById('trainer').value,
+        date: document.getElementById('date').value,
+        delivery: document.querySelector('[data-delivery].selected')?.dataset.delivery || '',
+        issue: document.getElementById('issue').value,
+        taught: document.getElementById('taught').value
+      };
+      localStorage.setItem(FORM_DATA_KEY, JSON.stringify(data));
+    }
+    
+    function submitForm() {
+      const trainee = document.getElementById('trainee').value.trim();
+      const trainer = document.getElementById('trainer').value.trim();
+      const date = document.getElementById('date').value;
+      const delivery = document.querySelector('[data-delivery].selected')?.dataset.delivery || '';
+      
+      if (!trainee || !trainer || !date || !delivery) {
+        showToast('全項目を入力してください');
+        return;
+      }
+      
+      showToast('記録を保存しました');
+      localStorage.removeItem(FORM_DATA_KEY);
+      setTimeout(() => {
+        document.getElementById('trainee').value = '';
+        document.getElementById('trainer').value = '';
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('issue').value = '';
+        document.getElementById('taught').value = '';
+        document.querySelectorAll('[data-delivery]').forEach(b => b.classList.remove('selected'));
+        goHome();
+      }, 2000);
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    updateTocActive('home');
+    init();
+
+    // --- playful mobile interactions ---
+    function updatePlayProgress(){
+      const doc=document.documentElement;
+      const max=Math.max(1,doc.scrollHeight-doc.clientHeight);
+      const pct=Math.max(0,Math.min(100,(window.scrollY/max)*100));
+      const bar=document.getElementById('playProgressBar');
+      if(bar) bar.style.width=pct+'%';
+      const top=document.getElementById('playTopBtn');
+      if(top) top.classList.toggle('show',window.scrollY>420);
+    }
+
+    function addTouchRipple(el,ev){
+      if(!el || getComputedStyle(el).position==='static') el.style.position='relative';
+      const r=document.createElement('span');
+      r.className='play-ripple';
+      const rect=el.getBoundingClientRect();
+      const size=Math.max(rect.width,rect.height)/2;
+      r.style.width=r.style.height=size+'px';
+      const x=(ev.clientX||rect.left+rect.width/2)-rect.left-size/2;
+      const y=(ev.clientY||rect.top+rect.height/2)-rect.top-size/2;
+      r.style.left=x+'px'; r.style.top=y+'px';
+      el.appendChild(r); setTimeout(()=>r.remove(),520);
+      if(navigator.vibrate) navigator.vibrate(8);
+    }
+
+    window.addEventListener('scroll',updatePlayProgress,{passive:true});
+    document.addEventListener('click',e=>{
+      const el=e.target.closest('.portal-card,.toc-item,.toc-home,.btn');
+      if(el) addTouchRipple(el,e);
+    });
+    document.getElementById('playTopBtn')?.addEventListener('click',()=>{
+      if(navigator.vibrate) navigator.vibrate(10);
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+    updatePlayProgress();
+
+  </script>
+</body>
+</html>
